@@ -7,18 +7,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
-  :root{
-    --brand:#2F338F;
-    --ink:#111827;
-    --muted:#6b7280;
-    --line:#e5e7eb;
-    --bg:#f5f6fb;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
+  :root{ --brand:#2F338F; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --bg:#f5f6fb; }
+  *{box-sizing:border-box} html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.35 "Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 
-  /* NAV (única barra) */
+  /* NAV (única) */
   .nav{position:sticky;top:0;z-index:10;background:var(--brand);color:#fff;box-shadow:0 2px 10px rgba(17,24,39,.15)}
   .nav .bar{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:.65rem 1rem}
   .nav .brand{font-weight:700;letter-spacing:.2px}
@@ -26,27 +19,29 @@
   .nav a{color:#fff;text-decoration:none;padding:.45rem .65rem;border-radius:10px}
   .nav a:hover{background:rgba(255,255,255,.12)}
 
-  /* WRAP */
   .wrap{max-width:1200px;margin:18px auto;padding:0 14px}
 
-  /* HERO compacto (no es barra) */
-  .hero{background:var(--brand);color:#fff;border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:16px;box-shadow:0 10px 30px rgba(17,24,39,.08);margin-bottom:14px}
+  /* HERO compacto BLANCO (no parece barra) */
+  .hero{
+    background:#fff; color:var(--brand);
+    border:1px solid var(--line);
+    border-radius:16px; padding:14px 18px;
+    display:flex; align-items:center; gap:16px;
+    box-shadow:0 10px 30px rgba(17,24,39,.04); margin-bottom:14px;
+  }
   .hero img{height:52px;width:auto}
   .hero .txt{line-height:1.2}
   .hero .title{font-size:1.55rem;font-weight:800;margin:0}
-  .hero .sub{font-size:.95rem;opacity:.95;margin-top:2px}
+  .hero .sub{font-size:.95rem;color:var(--muted);margin-top:2px}
 
-  /* PANEL */
   .panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(17,24,39,.06)}
   .title{font-size:1.15rem;font-weight:700;color:var(--brand);margin:6px 2px 14px}
 
-  /* KPIs */
   .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
   .kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px}
   .kpi h4{margin:0 0 6px;font-weight:600;color:#374151}
   .kpi .num{font-size:1.35rem;font-weight:700}
 
-  /* Toolbar */
   .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
   input,select,button{font:14px "Inter",sans-serif;border:1px solid #cfd4e1;border-radius:10px;padding:9px 11px}
   input[type="search"]{min-width:260px;flex:1}
@@ -56,7 +51,6 @@
   button.icon svg{width:16px;height:16px}
   button.small{padding:7px 10px}
 
-  /* Tabla */
   .grid{overflow:auto;border:1px solid var(--line);border-radius:14px}
   table{width:100%;border-collapse:collapse;background:#fff}
   th,td{padding:9px 10px;border-bottom:1px solid #f0f1f4;vertical-align:middle;white-space:nowrap}
@@ -66,14 +60,12 @@
   .pill{padding:2px 7px;border-radius:999px;font-size:.78rem}
   .ok{background:#e8fff0;color:#065f46}.bad{background:#fee2e2;color:#991b1b}
 
-  /* Editor */
   .layout{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-top:14px}
   .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
   label{display:block;font-size:.9rem;color:#4b5563;margin-bottom:4px}
   .muted{color:var(--muted)}
 
-  /* FOOTER */
   .foot{margin-top:20px;background:var(--brand);color:#fff;text-align:center;padding:14px;border-radius:14px}
 
   @media (max-width:1000px){
@@ -102,26 +94,24 @@
 
 <div class="wrap">
 
-  <!-- HERO compacto (no menú) -->
+  <!-- HERO compacto BLANCO -->
   <section class="hero" aria-label="Encabezado institucional">
     <img src="Logo el NUEVO ECUADOR.png" alt="El Nuevo Ecuador">
     <div class="txt">
-      <h1 class="title">Coordinación Zonal 5-8 | Uso Interno y Personal</h1>
-      <div class="sub">Secretaría Nacional de Gestión de Riesgos</div>
+      <h1 class="title">Secretaría Nacional de Gestión de Riesgos</h1>
+      <div class="sub">Coordinación Zonal 5-8 · Uso Interno y Personal</div>
     </div>
   </section>
 
   <div class="panel">
     <div class="title">Listado</div>
 
-    <!-- KPIs -->
     <div class="kpis">
       <div class="kpi"><h4>Total</h4><div class="num" id="k_total">-</div></div>
       <div class="kpi"><h4>Aprobados</h4><div class="num" id="k_ok">-</div></div>
       <div class="kpi"><h4>Rechazados</h4><div class="num" id="k_bad">-</div></div>
     </div>
 
-    <!-- Herramientas -->
     <div class="toolbar">
       <input id="q" type="search" placeholder="Buscar (n° trámite, evento, solicitante, ciudad…)">
       <select id="orderBy">
@@ -134,10 +124,9 @@
       <select id="dir"><option value="desc" selected>Desc</option><option value="asc">Asc</option></select>
       <select id="ps"><option>10</option><option selected>20</option><option>50</option><option>100</option></select>
       <button id="refresh" class="small">Actualizar</button>
-      <button id="sync" class="secondary small" title="Sincroniza correlativo del formulario">Sincronizar correlativo</button>
+      <button id="sync" class="secondary small">Sincronizar correlativo</button>
     </div>
 
-    <!-- TABLA exacta -->
     <div class="grid">
       <table>
         <thead>
@@ -158,7 +147,6 @@
       </table>
     </div>
 
-    <!-- EDITOR -->
     <div class="layout">
       <div class="card">
         <div class="title">Editar registro</div>
@@ -207,27 +195,20 @@
         </div>
       </div>
 
-      <div class="card" id="ayuda">
+      <div class="card">
         <div class="title">Ayuda</div>
-        <div class="muted">
-          Este panel consume el WebApp/Worker:<br>
-          • Admin: <code>/panel?action=…</code><br>
-          • Sync: <code>/?action=sync</code>
-        </div>
+        <div class="muted">Este panel usa el WebApp/Worker:<br>• Admin: <code>/panel?action=…</code><br>• Sync: <code>/?action=sync</code></div>
       </div>
     </div>
   </div>
 
-  <!-- PIE DE PÁGINA -->
-  <footer class="foot">
-    © 2025 Secretaría Nacional de Gestión de Riesgos – Coordinación Zonal 5-8
-  </footer>
+  <footer class="foot">© 2025 Secretaría Nacional de Gestión de Riesgos – CZ 5-8</footer>
 </div>
 
 <script>
-/* ====== CONFIG API ====== */
-const API_PANEL = "https://white-night-b8de.dylanvillasagua.workers.dev/panel"; // admin
-const API_FORM  = "https://white-night-b8de.dylanvillasagua.workers.dev/";      // sync
+/* ====== CONFIG ====== */
+const API_PANEL = "https://white-night-b8de.dylanvillasagua.workers.dev/panel";
+const API_FORM  = "https://white-night-b8de.dylanvillasagua.workers.dev/";
 
 /* ====== STATE & HELPERS ====== */
 const $ = (id)=>document.getElementById(id);
@@ -246,7 +227,7 @@ function icon(name){
   return map[name]||'';
 }
 
-/* ====== UI EVENTS ====== */
+/* ====== UI ====== */
 $('ps').addEventListener('change', ()=>{ state.ps=+$('ps').value; load(); });
 $('orderBy').addEventListener('change', ()=>{ state.orderBy=$('orderBy').value; load(); });
 $('dir').addEventListener('change', ()=>{ state.dir=$('dir').value; load(); });
@@ -262,7 +243,7 @@ $('btnCancelar').addEventListener('click', ()=>{
   state.selected=null;
 });
 
-/* ====== LOAD LIST ====== */
+/* ====== LIST ====== */
 async function load(){
   try{
     const u = new URL(API_PANEL);
@@ -273,8 +254,7 @@ async function load(){
     u.searchParams.set("orderBy", state.orderBy);
     u.searchParams.set("orderDir", state.dir);
 
-    const res = await fetch(u, { headers:{ "Accept":"application/json" }});
-    const data = await res.json();
+    const data = await (await fetch(u)).json();
     if (data.error) throw new Error(data.error);
 
     $('k_total').textContent = data?.stats?.total ?? 0;
@@ -304,19 +284,18 @@ async function load(){
         <td>${pdf ? `<a href="${pdf}" target="_blank" title="Abrir PDF">${icon('open')}</a>` : ''}</td>
         <td style="display:flex;gap:.35rem;">
           <button class="icon" title="Editar" onclick="openRow(${r.__row})">${icon('edit')}</button>
-          <button class="icon" title="Regenerar PDF" onclick="regen(${r.__row})">${icon('refresh')}</button>
+          <button class="icon" title="Regenerar/Descargar" onclick="askRegen(${r.__row})">${icon('refresh')}</button>
           <button class="icon" title="Eliminar" onclick="doDelete(${r.__row})">${icon('trash')}</button>
         </td>`;
       tb.appendChild(tr);
     });
 
   }catch(err){
-    console.error(err);
     Swal.fire("Error", err.message || "No se pudo cargar la lista", "error");
   }
 }
 
-/* ====== OPEN ROW ====== */
+/* ====== OPEN ====== */
 async function openRow(row){
   try{
     const u = new URL(API_PANEL);
@@ -338,7 +317,6 @@ async function openRow(row){
     $('f_ciudad').value        = rec['Ciudad'] || rec.ciudad || '';
     $('f_provincia').value     = rec['Provincia'] || rec.provincia || '';
 
-    // Fechas / horas: siempre llenas (corto), aunque en la hoja estén largas
     setDate('#f_fechaEvento',  rec.fechaEventoISO  ?? (rec['Fecha del Evento'] || rec.fechaEvento));
     setTime('#f_horaInicio',   rec.horaInicioISO   ?? (rec['Hora Inicio']     || rec.horaInicio));
     setTime('#f_horaFin',      rec.horaFinISO      ?? (rec['Hora Fin']        || rec.horaFin));
@@ -362,19 +340,18 @@ async function saveEdit(){
   p.set("action","update");
   p.set("__row", String(state.selected));
 
-  // nombres EXACTOS según tu hoja
   p.set("Evento Deportivo", $('f_evento').value);
   p.set("Presentado por", $('f_presentadoPor').value);
   p.set("Cédula de Identidad", $('f_cedula').value);
   p.set("Lugar del Evento", $('f_lugar').value);
   p.set("Ciudad", $('f_ciudad').value);
   p.set("Provincia", $('f_provincia').value);
-  p.set("Fecha del Evento", $('f_fechaEvento').value); // ISO -> backend lo guarda largo
+  p.set("Fecha del Evento", $('f_fechaEvento').value);
   p.set("Hora Inicio", $('f_horaInicio').value);
   p.set("Hora Fin", $('f_horaFin').value);
   p.set("Aforo", $('f_aforo').value);
   p.set("Estado del Trámite", $('f_estado').value);
-  p.set("Fecha de Emisión", $('f_fechaEmision').value); // ISO -> backend lo guarda largo
+  p.set("Fecha de Emisión", $('f_fechaEmision').value);
   p.set("Observaciones", $('f_Observaciones').value);
   if (state.pdfHeader) p.set(state.pdfHeader, $('f_PdfUrl').value);
 
@@ -412,17 +389,60 @@ async function doDelete(row){
   load();
 }
 
-/* ====== REGEN PDF ====== */
-async function regen(row){
+/* ====== REGEN: preguntar primero ====== */
+async function askRegen(row){
   try{
     const u = new URL(API_PANEL);
     u.searchParams.set("action","regen");
     u.searchParams.set("row", row);
-    const d = await (await fetch(u)).json().catch(()=>({}));
-    if (!d || d.ok===false){ Swal.fire("Aviso","No se pudo regenerar.","warning"); return; }
-    if (d.pdf) window.open(d.pdf,"_blank");
-    load();
-  }catch(e){ Swal.fire("Error","No se pudo regenerar","error"); }
+    u.searchParams.set("mode", "check");
+    const info = await (await fetch(u)).json().catch(()=>({}));
+
+    if (!info || info.ok === false){
+      Swal.fire("Error","No se pudo consultar el estado del PDF","error");
+      return;
+    }
+
+    if (info.exists && info.pdf){
+      const choice = await Swal.fire({
+        title: "¿Qué deseas hacer?",
+        html: "Ya existe un certificado para este trámite.",
+        icon: "question",
+        showDenyButton: true,
+        showCancelButton: true,
+        confirmButtonText: "Regenerar nuevo",
+        denyButtonText: "Descargar existente",
+        cancelButtonText: "Cancelar"
+      });
+      if (choice.isDenied){ window.open(info.pdf, "_blank"); return; }
+      if (choice.isConfirmed){ await doRegenForce(row); }
+      return;
+    }
+
+    const go = await Swal.fire({
+      title: "No hay PDF todavía",
+      text: "¿Deseas generarlo ahora?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Generar ahora",
+      cancelButtonText: "Cancelar"
+    });
+    if (go.isConfirmed){ await doRegenForce(row); }
+  }catch(e){
+    Swal.fire("Error","No se pudo procesar la solicitud","error");
+  }
+}
+
+async function doRegenForce(row){
+  const u = new URL(API_PANEL);
+  u.searchParams.set("action","regen");
+  u.searchParams.set("row", row);
+  u.searchParams.set("mode", "force");
+  const d = await (await fetch(u)).json().catch(()=>({}));
+  if (!d || d.ok===false){ Swal.fire("Error","No se pudo regenerar el PDF","error"); return; }
+  if (d.pdf) window.open(d.pdf, "_blank");
+  Swal.fire("Listo","PDF generado y enlace actualizado","success");
+  load();
 }
 
 /* ====== SYNC ====== */
@@ -433,7 +453,7 @@ async function doSync(){
   }catch{ Swal.fire("Error","No se pudo sincronizar","error"); }
 }
 
-/* ====== Helpers de fechas/horas para inputs ====== */
+/* ====== Helpers date/time ====== */
 function setDate(sel, v){
   const el = document.querySelector(sel);
   if (!el) return;
@@ -451,35 +471,20 @@ function parseDateAny(v){
   if (v instanceof Date && !isNaN(v)) return new Date(v.getFullYear(), v.getMonth(), v.getDate());
   const s = String(v).trim();
   if (!s) return null;
-  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);       // yyyy-mm-dd
-  if (m) return new Date(+m[1], +m[2]-1, +m[3]);
-  m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/); // dd/mm/aaaa o dd-mm-aaaa
-  if (m) return new Date(+m[3], +m[2]-1, +m[1]);
-  m = s.match(/^(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de\s+(\d{4})$/i); // 11 de mayo de 2025
-  if (m){
-    const meses = {enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,setiembre:9,octubre:10,noviembre:11,diciembre:12};
-    const mo = meses[(m[2]||'').toLowerCase()];
-    if (mo) return new Date(+m[3], mo-1, +m[1]);
-  }
-  const d = new Date(s);
-  return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/); if (m) return new Date(+m[1], +m[2]-1, +m[3]);
+  m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/); if (m) return new Date(+m[3], +m[2]-1, +m[1]);
+  m = s.match(/^(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de\s+(\d{4})$/i);
+  if (m){ const meses = {enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,setiembre:9,octubre:10,noviembre:11,diciembre:12}; const mo = meses[(m[2]||'').toLowerCase()]; if (mo) return new Date(+m[3], mo-1, +m[1]); }
+  const d = new Date(s); return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 function parseTimeAny(v){
   if (!v && v !== 0) return '';
   const s = String(v).trim();
   if (!s || s === '--:--') return '';
   let m = s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
-  if (m){
-    const hh = ('0'+Math.max(0, Math.min(23, parseInt(m[1],10)))).slice(-2);
-    const mm = ('0'+Math.max(0, Math.min(59, parseInt(m[2],10)))).slice(-2);
-    return `${hh}:${mm}`;
-  }
+  if (m){ const hh=('0'+Math.max(0,Math.min(23,parseInt(m[1],10)))).slice(-2); const mm=('0'+Math.max(0,Math.min(59,parseInt(m[2],10)))).slice(-2); return `${hh}:${mm}`; }
   const d = new Date(s);
-  if (!isNaN(d)){
-    const hh = ('0'+d.getHours()).slice(-2);
-    const mm = ('0'+d.getMinutes()).slice(-2);
-    return `${hh}:${mm}`;
-  }
+  if (!isNaN(d)){ const hh=('0'+d.getHours()).slice(-2); const mm=('0'+d.getMinutes()).slice(-2); return `${hh}:${mm}`; }
   return '';
 }
 
