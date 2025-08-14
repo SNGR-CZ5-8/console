@@ -18,9 +18,9 @@
   html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.35 "Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 
-  /* NAV (sin logo para evitar doble encabezado) */
+  /* NAV (única barra) */
   .nav{position:sticky;top:0;z-index:10;background:var(--brand);color:#fff;box-shadow:0 2px 10px rgba(17,24,39,.15)}
-  .nav .bar{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:.6rem 1rem}
+  .nav .bar{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:.65rem 1rem}
   .nav .brand{font-weight:700;letter-spacing:.2px}
   .nav .links{margin-left:auto;display:flex;gap:.25rem}
   .nav a{color:#fff;text-decoration:none;padding:.45rem .65rem;border-radius:10px}
@@ -29,7 +29,7 @@
   /* WRAP */
   .wrap{max-width:1200px;margin:18px auto;padding:0 14px}
 
-  /* HERO (encabezado compacto) */
+  /* HERO compacto (no es barra) */
   .hero{background:var(--brand);color:#fff;border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:16px;box-shadow:0 10px 30px rgba(17,24,39,.08);margin-bottom:14px}
   .hero img{height:52px;width:auto}
   .hero .txt{line-height:1.2}
@@ -89,27 +89,25 @@
 </head>
 <body>
 
-<!-- NAV -->
+<!-- NAV ÚNICA -->
 <nav class="nav">
   <div class="bar">
     <div class="brand">Administración de Certificados</div>
     <div class="links">
-      <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'})">Inicio</a>
-      <a href="#" onclick="location.reload()">Panel</a>
-      <a href="#ayuda">Ayuda</a>
+      <a href="index.html">Inicio</a>
+      <a href="plan_seguridad.html">Certificados</a>
     </div>
   </div>
 </nav>
 
 <div class="wrap">
 
-  <!-- HERO (encabezado compacto) -->
+  <!-- HERO compacto (no menú) -->
   <section class="hero" aria-label="Encabezado institucional">
-    <!-- reemplaza por tu ruta si es distinta -->
     <img src="Logo el NUEVO ECUADOR.png" alt="El Nuevo Ecuador">
     <div class="txt">
-      <h1 class="title">Secretaría Nacional de Gestión de Riesgos</h1>
-      <div class="sub">Coordinación Zonal 5-8 | Uso Interno y Personal</div>
+      <h1 class="title">Coordinación Zonal 5-8 | Uso Interno y Personal</h1>
+      <div class="sub">Secretaría Nacional de Gestión de Riesgos</div>
     </div>
   </section>
 
@@ -340,14 +338,14 @@ async function openRow(row){
     $('f_ciudad').value        = rec['Ciudad'] || rec.ciudad || '';
     $('f_provincia').value     = rec['Provincia'] || rec.provincia || '';
 
-    $('f_fechaEvento').value   = isoGuess(rec['Fecha del Evento'] || rec.fechaEvento || '');
-    $('f_horaInicio').value    = rec['Hora Inicio'] || rec.horaInicio || '';
-    $('f_horaFin').value       = rec['Hora Fin'] || rec.horaFin || '';
+    // Fechas / horas: siempre llenas (corto), aunque en la hoja estén largas
+    setDate('#f_fechaEvento',  rec.fechaEventoISO  ?? (rec['Fecha del Evento'] || rec.fechaEvento));
+    setTime('#f_horaInicio',   rec.horaInicioISO   ?? (rec['Hora Inicio']     || rec.horaInicio));
+    setTime('#f_horaFin',      rec.horaFinISO      ?? (rec['Hora Fin']        || rec.horaFin));
+    setDate('#f_fechaEmision', rec.fechaEmisionISO ?? rec.FechaEmisionISO ?? (rec['Fecha de Emisión'] || rec.fechaEmision));
+
     $('f_aforo').value         = rec['Aforo'] || rec.aforo || '';
-
     $('f_estado').value        = rec['Estado del Trámite'] || rec.estado || '';
-    $('f_fechaEmision').value  = (rec.fechaEmisionISO || rec.FechaEmisionISO || '').slice(0,10);
-
     $('f_PdfUrl').value        = rec.PDF || rec['URL PDF'] || rec.PdfUrl || '';
     $('f_Observaciones').value = rec.Observaciones || '';
 
@@ -364,18 +362,19 @@ async function saveEdit(){
   p.set("action","update");
   p.set("__row", String(state.selected));
 
+  // nombres EXACTOS según tu hoja
   p.set("Evento Deportivo", $('f_evento').value);
   p.set("Presentado por", $('f_presentadoPor').value);
   p.set("Cédula de Identidad", $('f_cedula').value);
   p.set("Lugar del Evento", $('f_lugar').value);
   p.set("Ciudad", $('f_ciudad').value);
   p.set("Provincia", $('f_provincia').value);
-  p.set("Fecha del Evento", $('f_fechaEvento').value);
+  p.set("Fecha del Evento", $('f_fechaEvento').value); // ISO -> backend lo guarda largo
   p.set("Hora Inicio", $('f_horaInicio').value);
   p.set("Hora Fin", $('f_horaFin').value);
   p.set("Aforo", $('f_aforo').value);
   p.set("Estado del Trámite", $('f_estado').value);
-  p.set("Fecha de Emisión", $('f_fechaEmision').value);
+  p.set("Fecha de Emisión", $('f_fechaEmision').value); // ISO -> backend lo guarda largo
   p.set("Observaciones", $('f_Observaciones').value);
   if (state.pdfHeader) p.set(state.pdfHeader, $('f_PdfUrl').value);
 
@@ -434,14 +433,54 @@ async function doSync(){
   }catch{ Swal.fire("Error","No se pudo sincronizar","error"); }
 }
 
-/* ====== UTILS ====== */
-function isoGuess(s){
-  if (!s) return "";
-  const t = String(s).trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(t)) return t;
-  const m = t.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-  if (m){ const d=m[1].padStart(2,'0'), mm=m[2].padStart(2,'0'); return `${m[3]}-${mm}-${d}`; }
-  return "";
+/* ====== Helpers de fechas/horas para inputs ====== */
+function setDate(sel, v){
+  const el = document.querySelector(sel);
+  if (!el) return;
+  const dt = parseDateAny(v);
+  if (dt) el.valueAsDate = dt; else el.value = '';
+}
+function setTime(sel, v){
+  const el = document.querySelector(sel);
+  if (!el) return;
+  const t = parseTimeAny(v);
+  el.value = t || '';
+}
+function parseDateAny(v){
+  if (!v && v !== 0) return null;
+  if (v instanceof Date && !isNaN(v)) return new Date(v.getFullYear(), v.getMonth(), v.getDate());
+  const s = String(v).trim();
+  if (!s) return null;
+  let m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);       // yyyy-mm-dd
+  if (m) return new Date(+m[1], +m[2]-1, +m[3]);
+  m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/); // dd/mm/aaaa o dd-mm-aaaa
+  if (m) return new Date(+m[3], +m[2]-1, +m[1]);
+  m = s.match(/^(\d{1,2})\s+de\s+([a-záéíóúñ]+)\s+de\s+(\d{4})$/i); // 11 de mayo de 2025
+  if (m){
+    const meses = {enero:1,febrero:2,marzo:3,abril:4,mayo:5,junio:6,julio:7,agosto:8,septiembre:9,setiembre:9,octubre:10,noviembre:11,diciembre:12};
+    const mo = meses[(m[2]||'').toLowerCase()];
+    if (mo) return new Date(+m[3], mo-1, +m[1]);
+  }
+  const d = new Date(s);
+  return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+function parseTimeAny(v){
+  if (!v && v !== 0) return '';
+  const s = String(v).trim();
+  if (!s || s === '--:--') return '';
+  let m = s.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  if (m){
+    const hh = ('0'+Math.max(0, Math.min(23, parseInt(m[1],10)))).slice(-2);
+    const mm = ('0'+Math.max(0, Math.min(59, parseInt(m[2],10)))).slice(-2);
+    return `${hh}:${mm}`;
+  }
+  const d = new Date(s);
+  if (!isNaN(d)){
+    const hh = ('0'+d.getHours()).slice(-2);
+    const mm = ('0'+d.getMinutes()).slice(-2);
+    return `${hh}:${mm}`;
+  }
+  return '';
 }
 
 /* INIT */
