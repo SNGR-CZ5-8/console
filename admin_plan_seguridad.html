@@ -2,94 +2,89 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Panel de Administración — Certificados</title>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Administración de Certificados</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
   :root{
     --brand:#2F338F;
-    --ink:#333;
+    --ink:#111827;
     --muted:#6b7280;
     --line:#e5e7eb;
-    --bg:#f4f6f9;
+    --bg:#f5f6fb;
   }
-  *{box-sizing:border-box;margin:0;padding:0;font-family:'Roboto',sans-serif}
-  body{background:var(--bg);color:var(--ink);padding-bottom:80px}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.35 "Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 
-  /* NAVBAR */
-  .nav{position:sticky;top:0;z-index:5;background:var(--brand);color:#fff;box-shadow:0 2px 5px rgba(0,0,0,.15)}
-  .nav .bar{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:.75rem 1rem}
-  .nav .brand{display:flex;align-items:center;gap:.75rem}
-  .nav img{height:40px}
-  .nav h1{font-size:1.25rem;font-weight:700}
-  .nav .links{margin-left:auto;display:flex;gap:.5rem}
-  .nav a{color:#fff;text-decoration:none;padding:.4rem .6rem;border-radius:8px}
+  /* NAV: un solo encabezado */
+  .nav{position:sticky;top:0;z-index:10;background:var(--brand);color:#fff;box-shadow:0 2px 10px rgba(17,24,39,.15)}
+  .nav .bar{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:.8rem 1rem}
+  .nav .brand{display:flex;align-items:center;gap:.75rem;font-weight:700}
+  .nav .brand img{height:28px;width:auto;display:block}
+  .nav .brand span{font-size:1.05rem;letter-spacing:.2px}
+  .nav .links{margin-left:auto;display:flex;gap:.25rem}
+  .nav a{color:#fff;text-decoration:none;padding:.5rem .7rem;border-radius:10px}
   .nav a:hover{background:rgba(255,255,255,.12)}
 
-  /* WRAPPER */
-  .wrap{max-width:1100px;margin:1rem auto;background:#fff;padding:1rem 1.25rem;border-radius:16px;box-shadow:0 4px 15px rgba(0,0,0,.1)}
+  /* WRAP */
+  .wrap{max-width:1200px;margin:18px auto;padding:0 14px}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(17,24,39,.06)}
 
-  /* HEADER (igual a tu formulario) */
-  header.top{background:var(--brand);color:#fff;text-align:center;padding:1.25rem 1rem;box-shadow:0 2px 5px rgba(0,0,0,.15);border-radius:16px}
-  header.top img{max-height:70px;display:block;margin:0 auto .5rem}
-  header.top h2{font-size:1.5rem;font-weight:bold}
-  header.top p{font-size:.9rem;opacity:.9}
+  .title{font-size:1.2rem;font-weight:700;color:var(--brand);margin:6px 2px 14px}
 
-  h3.section{color:var(--brand);font-size:1.2rem;margin:1rem 0 .75rem}
-
-  /* KPI */
-  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin:.5rem 0 1rem}
-  .card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:.9rem}
-  .card h4{font-size:.95rem;color:#4b5563;margin-bottom:.35rem}
-  .card .num{font-size:1.5rem;font-weight:700}
+  /* KPIs pequeños */
+  .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px}
+  .kpi h4{margin:0 0 6px;font-weight:600;color:#374151}
+  .kpi .num{font-size:1.4rem;font-weight:700}
 
   /* Toolbar */
-  .toolbar{display:flex;flex-wrap:wrap;gap:.5rem;margin:.5rem 0 .75rem}
-  input,select,button{padding:9px 11px;border:1px solid #ccc;border-radius:10px;font-size:.95rem}
-  input{flex:1;min-width:220px}
-  button{background:var(--brand);color:#fff;font-weight:700;cursor:pointer;border:none}
+  .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
+  input,select,button{font:14px "Inter",sans-serif;border:1px solid #cfd4e1;border-radius:10px;padding:9px 11px}
+  input[type="search"]{min-width:260px;flex:1}
+  button{background:var(--brand);color:#fff;font-weight:700;border:none;cursor:pointer}
   button.secondary{background:#eef2ff;color:var(--brand);border:1px solid #c7ccff}
-  button.icon{background:#fff;color:var(--brand);border:1px solid #c7ccff;padding:6px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center}
-  button.icon svg{width:16px;height:16px;display:block}
-  button.small{padding:6px 10px;font-size:.9rem}
-  button[disabled]{opacity:.6;cursor:not-allowed}
+  button.icon{background:#fff;color:var(--brand);border:1px solid #c7ccff;padding:6px 8px;display:inline-flex;align-items:center;justify-content:center}
+  button.icon svg{width:16px;height:16px}
+  button.small{padding:7px 10px}
 
-  /* Table */
-  .grid{overflow:auto;border-radius:12px;border:1px solid var(--line)}
+  /* Tabla */
+  .grid{overflow:auto;border:1px solid var(--line);border-radius:14px}
   table{width:100%;border-collapse:collapse;background:#fff}
-  th,td{border-bottom:1px solid #f0f1f4;padding:8px 10px;font-size:.85rem;vertical-align:middle}
+  th,td{padding:9px 10px;border-bottom:1px solid #f0f1f4;vertical-align:middle;white-space:nowrap}
   th{background:#f9fafb;text-align:left;position:sticky;top:0;z-index:1}
   tr:hover td{background:#fafafa}
-  .clip{max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .pill{padding:2px 6px;border-radius:999px;font-size:.75rem}
+  .clip{max-width:260px;overflow:hidden;text-overflow:ellipsis}
+  .pill{padding:2px 7px;border-radius:999px;font-size:.78rem}
   .ok{background:#e8fff0;color:#065f46}.bad{background:#fee2e2;color:#991b1b}
 
-  /* Layout inferior */
-  .section{display:grid;grid-template-columns:2fr 1fr;gap:1rem;margin-top:1rem}
-  .muted{color:var(--muted);font-size:.9rem}
-  .row{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin-bottom:.5rem}
-  label{font-size:.9rem;color:#555;display:block;margin-bottom:4px}
+  /* Editor */
+  .layout{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-top:14px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  label{display:block;font-size:.9rem;color:#4b5563;margin-bottom:4px}
+  .muted{color:var(--muted)}
 
-  footer{position:fixed;bottom:0;left:0;width:100%;background:var(--brand);color:#fff;text-align:center;padding:.8rem;font-size:.85rem}
-
-  @media (max-width:900px){
+  @media (max-width:1000px){
+    .layout{grid-template-columns:1fr}
+    .row{grid-template-columns:1fr}
     .kpis{grid-template-columns:1fr}
-    .section{grid-template-columns:1fr}
   }
 </style>
 </head>
 <body>
 
-<!-- NAV -->
+<!-- NAV: SOLO UNO -->
 <nav class="nav">
   <div class="bar">
     <div class="brand">
-      <img src="Logo el NUEVO ECUADOR.png" alt="Logo">
-      <h1>Administración de Certificados</h1>
+      <img src="Logo el NUEVO ECUADOR.png" alt="Gobierno de Ecuador">
+      <span>Administración de Certificados</span>
     </div>
     <div class="links">
-      <a href="index.html">Inicio</a>
+      <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'})">Inicio</a>
       <a href="#" onclick="location.reload()">Panel</a>
       <a href="#ayuda">Ayuda</a>
     </div>
@@ -97,159 +92,153 @@
 </nav>
 
 <div class="wrap">
-  <header class="top">
-    <img src="Logo el NUEVO ECUADOR.png" alt="Logo SNGRE">
-    <h2>Secretaría Nacional de Gestión de Riesgos</h2>
-    <p>Coordinación Zonal 5-8 | Uso Interno y Personal</p>
-  </header>
 
-  <h3 class="section">Listado</h3>
+  <div class="panel">
+    <div class="title">Listado</div>
 
-  <div class="kpis">
-    <div class="card"><h4>Total</h4><div class="num" id="k_total">-</div></div>
-    <div class="card"><h4>Aprobados</h4><div class="num" id="k_ok">-</div></div>
-    <div class="card"><h4>Rechazados</h4><div class="num" id="k_bad">-</div></div>
-  </div>
-
-  <div class="toolbar">
-    <input id="q" placeholder="Buscar (n° trámite, evento, solicitante, ciudad…)">
-    <select id="orderBy">
-      <option value="N° de Trámite" selected>N° de Trámite</option>
-      <option value="Fecha de Emisión">Fecha de Emisión</option>
-      <option value="Evento Deportivo">Evento</option>
-      <option value="Presentado por">Presentado por</option>
-      <option value="Estado del Trámite">Estado</option>
-    </select>
-    <select id="dir"><option value="desc" selected>Desc</option><option value="asc">Asc</option></select>
-    <select id="ps"><option>10</option><option selected>20</option><option>50</option><option>100</option></select>
-    <button id="refresh" class="small">Actualizar</button>
-    <button id="sync" class="secondary small" title="Sincroniza el contador con la hoja">Sincronizar correlativo</button>
-  </div>
-
-  <div class="grid">
-    <table>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>N° de Trámite</th>
-          <th class="clip">Evento</th>
-          <th class="clip">Presentado por</th>
-          <th>Ciudad</th>
-          <th>Fecha Emisión</th>
-          <th>Estado</th>
-          <th>PDF</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="tbody">
-        <tr><td colspan="9" style="text-align:center">Cargando…</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="section">
-    <div class="card">
-      <h3 class="section">Editar registro</h3>
-      <div id="editInfo" class="muted">Selecciona una fila.</div>
-      <div id="editForm" style="display:none;">
-        <div class="row">
-          <div>
-            <label>Evento Deportivo</label>
-            <input id="f_evento" placeholder="Evento Deportivo">
-          </div>
-          <div>
-            <label>Presentado por</label>
-            <input id="f_presentadoPor" placeholder="Presentado por">
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>Cédula de Identidad</label>
-            <input id="f_cedula" placeholder="Cédula">
-          </div>
-          <div>
-            <label>Lugar del Evento</label>
-            <input id="f_lugar" placeholder="Lugar">
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>Ciudad</label>
-            <input id="f_ciudad" placeholder="Ciudad">
-          </div>
-          <div>
-            <label>Provincia</label>
-            <input id="f_provincia" placeholder="Provincia">
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>Fecha del Evento</label>
-            <input type="date" id="f_fechaEvento">
-          </div>
-          <div>
-            <label>Hora Inicio</label>
-            <input type="time" id="f_horaInicio">
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>Hora Fin</label>
-            <input type="time" id="f_horaFin">
-          </div>
-          <div>
-            <label>Aforo</label>
-            <input type="number" id="f_aforo" min="0" step="1" placeholder="0">
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>Estado del Trámite</label>
-            <select id="f_estado">
-              <option value="">(vacío)</option>
-              <option value="Aprobado">Aprobado</option>
-              <option value="Rechazado">Rechazado</option>
-            </select>
-          </div>
-          <div>
-            <label>Fecha de Emisión</label>
-            <input type="date" id="f_fechaEmision">
-          </div>
-        </div>
-        <div class="row">
-          <div>
-            <label>URL PDF (opcional)</label>
-            <input id="f_PdfUrl" placeholder="https://…">
-          </div>
-          <div>
-            <label>Observaciones (opcional)</label>
-            <input id="f_Observaciones" placeholder="Observaciones">
-          </div>
-        </div>
-        <div class="row">
-          <button id="save" class="small">Guardar cambios</button>
-          <button id="deleteBtn" class="secondary small" style="margin-left:.5rem">Eliminar registro</button>
-        </div>
-      </div>
+    <!-- KPIs -->
+    <div class="kpis">
+      <div class="kpi"><h4>Total</h4><div class="num" id="k_total">-</div></div>
+      <div class="kpi"><h4>Aprobados</h4><div class="num" id="k_ok">-</div></div>
+      <div class="kpi"><h4>Rechazados</h4><div class="num" id="k_bad">-</div></div>
     </div>
 
-    <div class="card" id="ayuda">
-      <h3 class="section">Ayuda</h3>
-      <div class="muted">
-        Este panel llama a tu <b>Cloudflare Worker</b>:
-        <div style="margin:.4rem 0 .2rem .2rem">
-          • Admin: <code>/panel?action=…</code><br/>
+    <!-- Herramientas -->
+    <div class="toolbar">
+      <input id="q" type="search" placeholder="Buscar (n° trámite, evento, solicitante, ciudad…)">
+      <select id="orderBy">
+        <option value="N° de Trámite" selected>N° de Trámite</option>
+        <option value="Fecha de Emisión">Fecha de Emisión</option>
+        <option value="Evento Deportivo">Evento</option>
+        <option value="Presentado por">Presentado por</option>
+        <option value="Estado del Trámite">Estado</option>
+      </select>
+      <select id="dir"><option value="desc" selected>Desc</option><option value="asc">Asc</option></select>
+      <select id="ps"><option>10</option><option selected>20</option><option>50</option><option>100</option></select>
+      <button id="refresh" class="small">Actualizar</button>
+      <button id="sync" class="secondary small" title="Sincroniza correlativo del formulario">Sincronizar correlativo</button>
+    </div>
+
+    <!-- Tabla EXACTA pedida -->
+    <div class="grid">
+      <table>
+        <thead>
+          <tr>
+            <th>N° Trámite</th>
+            <th class="clip">Evento</th>
+            <th class="clip">Presentado por</th>
+            <th>Cédula</th>
+            <th>Fecha Emisión</th>
+            <th>Estado</th>
+            <th>PDF</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbody">
+          <tr><td colspan="8" style="text-align:center">Cargando…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Editor -->
+    <div class="layout">
+      <div class="card">
+        <div class="title">Editar registro</div>
+        <div id="editInfo" class="muted">Selecciona una fila para editar.</div>
+        <div id="editForm" style="display:none;">
+          <div class="row">
+            <div>
+              <label>Evento Deportivo</label>
+              <input id="f_evento" placeholder="Evento Deportivo">
+            </div>
+            <div>
+              <label>Presentado por</label>
+              <input id="f_presentadoPor" placeholder="Presentado por">
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Cédula de Identidad</label>
+              <input id="f_cedula" placeholder="Cédula">
+            </div>
+            <div>
+              <label>Lugar del Evento</label>
+              <input id="f_lugar" placeholder="Lugar">
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Ciudad</label>
+              <input id="f_ciudad" placeholder="Ciudad">
+            </div>
+            <div>
+              <label>Provincia</label>
+              <input id="f_provincia" placeholder="Provincia">
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Fecha del Evento</label>
+              <input type="date" id="f_fechaEvento">
+            </div>
+            <div>
+              <label>Hora Inicio</label>
+              <input type="time" id="f_horaInicio">
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Hora Fin</label>
+              <input type="time" id="f_horaFin">
+            </div>
+            <div>
+              <label>Aforo</label>
+              <input type="number" id="f_aforo" min="0" step="1" placeholder="0">
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Estado del Trámite</label>
+              <select id="f_estado">
+                <option value="">(vacío)</option>
+                <option value="Aprobado">Aprobado</option>
+                <option value="Rechazado">Rechazado</option>
+              </select>
+            </div>
+            <div>
+              <label>Fecha de Emisión</label>
+              <input type="date" id="f_fechaEmision">
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>URL PDF (opcional)</label>
+              <input id="f_PdfUrl" placeholder="https://…">
+            </div>
+            <div>
+              <label>Observaciones (opcional)</label>
+              <input id="f_Observaciones" placeholder="Observaciones">
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:6px">
+            <button id="btnCancelar" class="secondary">Cancelar</button>
+            <button id="save">Guardar cambios</button>
+            <button id="deleteBtn" class="secondary">Eliminar registro</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="ayuda">
+        <div class="title">Ayuda</div>
+        <div class="muted">
+          Este panel consume el WebApp/Worker:<br>
+          • Admin: <code>/panel?action=…</code><br>
           • Sync: <code>/?action=sync</code>
         </div>
-        Para soporte, comunicarse con el <b>Ing. Jose Smith</b>.
       </div>
     </div>
   </div>
 </div>
-
-<footer>
-  © 2025 Secretaría Nacional de Gestión de Riesgos - CZ 5-8 | Uso Interno
-</footer>
 
 <script>
 /* ====== CONFIG API ====== */
@@ -258,14 +247,14 @@ const API_FORM  = "https://white-night-b8de.dylanvillasagua.workers.dev/";      
 
 /* ====== STATE & HELPERS ====== */
 const $ = (id)=>document.getElementById(id);
-const state = { page:1, ps:20, q:'', orderBy:'N° de Trámite', dir:'desc', selected:null, pdfHeader:null, numeroTramite:null };
+const state = { page:1, ps:20, q:'', orderBy:'N° de Trámite', dir:'desc', selected:null, pdfHeader:null };
 
 function safe(v){ return (v===undefined||v===null)?'':String(v); }
 function debounce(fn,ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a),ms);} }
 function badge(s){ return (String(s||'').toLowerCase()==='aprobado')?'<span class="pill ok">Aprobado</span>':'<span class="pill bad">Rechazado</span>'; }
-function icon(name){ // mini SVGs
+function icon(name){
   const map={
-    edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>',
+    edit:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 1 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>',
     link:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 1 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 1 0 7 7l1-1"/></svg>',
     open:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M5 5v14h14"/></svg>',
     refresh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v7h-7"/></svg>',
@@ -274,7 +263,7 @@ function icon(name){ // mini SVGs
   return map[name]||'';
 }
 
-/* ====== UI EVENTOS ====== */
+/* ====== UI EVENTS ====== */
 $('ps').addEventListener('change', ()=>{ state.ps=+$('ps').value; load(); });
 $('orderBy').addEventListener('change', ()=>{ state.orderBy=$('orderBy').value; load(); });
 $('dir').addEventListener('change', ()=>{ state.dir=$('dir').value; load(); });
@@ -282,9 +271,15 @@ $('q').addEventListener('input', debounce(()=>{ state.q=$('q').value; state.page
 $('refresh').addEventListener('click', load);
 $('sync').addEventListener('click', doSync);
 $('save').addEventListener('click', saveEdit);
-$('deleteBtn').addEventListener('click', doDelete);
+$('deleteBtn').addEventListener('click', ()=> doDelete(state.selected));
+$('btnCancelar').addEventListener('click', ()=>{
+  $('editForm').style.display='none';
+  $('editInfo').style.display='block';
+  document.querySelectorAll('#editForm input, #editForm select').forEach(el=> el.value='');
+  state.selected=null;
+});
 
-/* ====== CARGA LISTA ====== */
+/* ====== LOAD LIST (tabla exacta) ====== */
 async function load(){
   try{
     const u = new URL(API_PANEL);
@@ -296,39 +291,37 @@ async function load(){
     u.searchParams.set("orderDir", state.dir);
 
     const res = await fetch(u, { headers:{ "Accept":"application/json" }});
-    const text = await res.text();
-    let data; try { data = JSON.parse(text) } catch { data = { raw:text }; }
+    const data = await res.json();
 
-    if (data.error){ throw new Error(data.error); }
+    if (data.error) throw new Error(data.error);
 
-    // KPIs
-    const stats = {
-      total: data?.stats?.total ?? (Array.isArray(data)?data.length:0),
-      aprobados: data?.stats?.aprobados ?? 0,
-      rechazados: data?.stats?.rechazados ?? 0
-    };
-    $('k_total').textContent = stats.total;
-    $('k_ok').textContent    = stats.aprobados;
-    $('k_bad').textContent   = stats.rechazados;
+    $('k_total').textContent = data?.stats?.total ?? 0;
+    $('k_ok').textContent    = data?.stats?.aprobados ?? 0;
+    $('k_bad').textContent   = data?.stats?.rechazados ?? 0;
 
-    const rows = Array.isArray(data?.rows) ? data.rows : (Array.isArray(data) ? data : []);
+    const rows = Array.isArray(data?.rows) ? data.rows : [];
     const tb = $('tbody'); tb.innerHTML='';
 
     rows.forEach(r=>{
-      const pdf = r.PDF || r['URL PDF'] || r.PdfUrl || '';
+      const num  = r['N° de Trámite'] || r.numeroTramite || '';
+      const ev   = r['Evento Deportivo'] || r.evento || '';
+      const pres = r['Presentado por'] || r.presentadoPor || '';
+      const ci   = r['Cédula de Identidad'] || r.cedula || '';
+      const femi = r['Fecha de Emisión'] || r.fechaEmision || '';
+      const est  = r['Estado del Trámite'] || r.estado || '';
+      const pdf  = r.PDF || r['URL PDF'] || r.PdfUrl || '';
+
       const tr = document.createElement('tr');
       tr.innerHTML = `
-        <td>${r.__row??''}</td>
-        <td class="clip" title="${safe(r['N° de Trámite'] || r.numeroTramite)}">${safe(r['N° de Trámite'] || r.numeroTramite)}</td>
-        <td class="clip" title="${safe(r['Evento Deportivo'] || r.evento)}">${safe(r['Evento Deportivo'] || r.evento)}</td>
-        <td class="clip" title="${safe(r['Presentado por'] || r.presentadoPor)}">${safe(r['Presentado por'] || r.presentadoPor)}</td>
-        <td>${safe(r['Ciudad'] || r.ciudad)}</td>
-        <td>${safe(r['Fecha de Emisión'] || r.fechaEmision || '')}</td>
-        <td>${badge(r['Estado del Trámite'] || r.estado)}</td>
+        <td class="clip" title="${safe(num)}">${safe(num)}</td>
+        <td class="clip" title="${safe(ev)}">${safe(ev)}</td>
+        <td class="clip" title="${safe(pres)}">${safe(pres)}</td>
+        <td>${safe(ci)}</td>
+        <td>${safe(femi)}</td>
+        <td>${badge(est)}</td>
         <td>${pdf ? `<a href="${pdf}" target="_blank" title="Abrir PDF">${icon('open')}</a>` : ''}</td>
         <td style="display:flex;gap:.35rem;">
           <button class="icon" title="Editar" onclick="openRow(${r.__row})">${icon('edit')}</button>
-          <button class="icon" title="Copiar enlace" onclick="copyLink('${pdf||''}')">${icon('link')}</button>
           <button class="icon" title="Regenerar PDF" onclick="regen(${r.__row})">${icon('refresh')}</button>
           <button class="icon" title="Eliminar" onclick="doDelete(${r.__row})">${icon('trash')}</button>
         </td>`;
@@ -341,24 +334,22 @@ async function load(){
   }
 }
 
-/* ====== ABRIR FILA ====== */
+/* ====== OPEN ROW ====== */
 async function openRow(row){
   try{
     const u = new URL(API_PANEL);
     u.searchParams.set("action","get");
     u.searchParams.set("row", row);
-    const res = await fetch(u);
-    const rec = await res.json();
+    const rec = await (await fetch(u)).json();
     if (rec.error) throw new Error(rec.error);
 
     state.selected = rec.__row;
     state.pdfHeader = rec._pdfHeader || null;
-    state.numeroTramite = rec['N° de Trámite'] || rec.numeroTramite || '';
 
-    // mapear campos
     $('editInfo').style.display='none';
     $('editForm').style.display='block';
 
+    // mapear al editor
     $('f_evento').value        = rec['Evento Deportivo'] || rec.evento || '';
     $('f_presentadoPor').value = rec['Presentado por'] || rec.presentadoPor || '';
     $('f_cedula').value        = rec['Cédula de Identidad'] || rec.cedula || '';
@@ -366,147 +357,108 @@ async function openRow(row){
     $('f_ciudad').value        = rec['Ciudad'] || rec.ciudad || '';
     $('f_provincia').value     = rec['Provincia'] || rec.provincia || '';
 
-    // fecha evento: intentamos normalizar a ISO si vino con formato largo
-    const fev = rec['Fecha del Evento'] || rec.fechaEvento || '';
-    $('f_fechaEvento').value   = isoGuess(fev);
-
-    $('f_horaInicio').value    = rec['Hora Inicio'] || rec.horaInicio || rec['horaInicio'] || '';
-    $('f_horaFin').value       = rec['Hora Fin'] || rec.horaFin || rec['horaFin'] || '';
+    $('f_fechaEvento').value   = isoGuess(rec['Fecha del Evento'] || rec.fechaEvento || '');
+    $('f_horaInicio').value    = rec['Hora Inicio'] || rec.horaInicio || '';
+    $('f_horaFin').value       = rec['Hora Fin'] || rec.horaFin || '';
     $('f_aforo').value         = rec['Aforo'] || rec.aforo || '';
 
     $('f_estado').value        = rec['Estado del Trámite'] || rec.estado || '';
-    $('f_fechaEmision').value  = (rec.FechaEmisionISO || '').slice(0,10);
+    $('f_fechaEmision').value  = (rec.fechaEmisionISO || rec.FechaEmisionISO || '').slice(0,10);
 
-    const pdfVal               = rec.PDF || rec['URL PDF'] || rec.PdfUrl || '';
-    $('f_PdfUrl').value        = pdfVal;
+    $('f_PdfUrl').value        = rec.PDF || rec['URL PDF'] || rec.PdfUrl || '';
     $('f_Observaciones').value = rec.Observaciones || '';
 
     window.scrollTo({ top: document.body.scrollHeight, behavior:'smooth' });
   }catch(e){
-    console.error(e);
     Swal.fire("Error", e.message || "No se pudo abrir el registro", "error");
   }
 }
 
-/* ====== GUARDAR ====== */
+/* ====== SAVE ====== */
 async function saveEdit(){
   if (!state.selected) return;
-  const params = new URLSearchParams();
-  params.set("action","update");
-  params.set("__row", String(state.selected));
+  const p = new URLSearchParams();
+  p.set("action","update");
+  p.set("__row", String(state.selected));
 
-  // nombres EXACTOS de headers en la hoja
-  params.set("Evento Deportivo", $('f_evento').value);
-  params.set("Presentado por", $('f_presentadoPor').value);
-  params.set("Cédula de Identidad", $('f_cedula').value);
-  params.set("Lugar del Evento", $('f_lugar').value);
-  params.set("Ciudad", $('f_ciudad').value);
-  params.set("Provincia", $('f_provincia').value);
-  params.set("Fecha del Evento", $('f_fechaEvento').value);   // si tu hoja guarda texto largo, tu backend puede formatear
-  params.set("Hora Inicio", $('f_horaInicio').value);
-  params.set("Hora Fin", $('f_horaFin').value);
-  params.set("Aforo", $('f_aforo').value);
-  params.set("Estado del Trámite", $('f_estado').value);
-  params.set("Fecha de Emisión", $('f_fechaEmision').value);
-  params.set("Observaciones", $('f_Observaciones').value);
-  if (state.pdfHeader) params.set(state.pdfHeader, $('f_PdfUrl').value);
+  // nombres EXACTOS según tu hoja
+  p.set("Evento Deportivo", $('f_evento').value);
+  p.set("Presentado por", $('f_presentadoPor').value);
+  p.set("Cédula de Identidad", $('f_cedula').value);
+  p.set("Lugar del Evento", $('f_lugar').value);
+  p.set("Ciudad", $('f_ciudad').value);
+  p.set("Provincia", $('f_provincia').value);
+  p.set("Fecha del Evento", $('f_fechaEvento').value);
+  p.set("Hora Inicio", $('f_horaInicio').value);
+  p.set("Hora Fin", $('f_horaFin').value);
+  p.set("Aforo", $('f_aforo').value);
+  p.set("Estado del Trámite", $('f_estado').value);
+  p.set("Fecha de Emisión", $('f_fechaEmision').value);
+  p.set("Observaciones", $('f_Observaciones').value);
+  if (state.pdfHeader) p.set(state.pdfHeader, $('f_PdfUrl').value);
 
-  const res = await fetch(API_PANEL, {
+  const out = await (await fetch(API_PANEL, {
     method:"POST",
     headers:{ "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8" },
-    body: params.toString()
-  });
-  const out = await res.json();
+    body: p.toString()
+  })).json();
+
   if (!out.ok){ Swal.fire("Error","No se pudo guardar","error"); return; }
   Swal.fire("Guardado","Cambios aplicados","success");
   load();
 }
 
-/* ====== ELIMINAR ====== */
+/* ====== DELETE ====== */
 async function doDelete(row){
-  const targetRow = row || state.selected;
-  if (!targetRow){ Swal.fire("Aviso","Selecciona un registro primero","info"); return; }
-  const c = await Swal.fire({
-    title:"¿Eliminar registro?",
-    text:"Esta acción no se puede deshacer.",
-    icon:"warning",
-    showCancelButton:true,
-    confirmButtonText:"Sí, eliminar",
-    cancelButtonText:"Cancelar"
-  });
+  const target = row || state.selected;
+  if (!target){ Swal.fire("Aviso","Selecciona un registro primero","info"); return; }
+  const c = await Swal.fire({title:"¿Eliminar?",text:"Esta acción no se puede deshacer.",icon:"warning",showCancelButton:true,confirmButtonText:"Sí, eliminar",cancelButtonText:"Cancelar"});
   if (!c.isConfirmed) return;
 
-  try{
-    const params = new URLSearchParams();
-    params.set("action","delete");
-    params.set("row", String(targetRow));
-    const res = await fetch(API_PANEL, {
-      method:"POST",
-      headers:{ "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8" },
-      body: params.toString()
-    });
-    const out = await res.json().catch(()=>({}));
-    if (!out || out.ok===false){
-      Swal.fire("Aviso","Eliminar no disponible en el backend (action=delete).","warning");
-      return;
-    }
-    Swal.fire("Eliminado","Registro eliminado","success");
-    state.selected = null;
-    $('editForm').style.display='none';
-    $('editInfo').style.display='block';
-    load();
-  }catch(e){
-    Swal.fire("Error","No se pudo eliminar","error");
-  }
+  const p = new URLSearchParams();
+  p.set("action","delete");
+  p.set("row", String(target));
+
+  const out = await (await fetch(API_PANEL,{
+    method:"POST",
+    headers:{ "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8" },
+    body: p.toString()
+  })).json().catch(()=>({}));
+
+  if (!out || out.ok===false){ Swal.fire("Aviso","Eliminar no disponible.","warning"); return; }
+  Swal.fire("Eliminado","Registro eliminado","success");
+  state.selected=null; $('editForm').style.display='none'; $('editInfo').style.display='block';
+  load();
 }
 
-/* ====== REGENERAR PDF ====== */
+/* ====== REGEN PDF ====== */
 async function regen(row){
   try{
     const u = new URL(API_PANEL);
     u.searchParams.set("action","regen");
     u.searchParams.set("row", row);
-    const res = await fetch(u);
-    const d = await res.json().catch(()=>({}));
-    if (!d || d.error || d.ok===false){
-      Swal.fire("Aviso","Regenerar no disponible en el backend (action=regen).","warning");
-      return;
-    }
-    if (d.pdf){ window.open(d.pdf, "_blank"); }
-    Swal.fire("Listo","PDF regenerado","success");
+    const d = await (await fetch(u)).json().catch(()=>({}));
+    if (!d || d.ok===false){ Swal.fire("Aviso","No se pudo regenerar.","warning"); return; }
+    if (d.pdf) window.open(d.pdf,"_blank");
     load();
-  }catch(e){
-    Swal.fire("Error","No se pudo regenerar","error");
-  }
-}
-
-/* ====== COPIAR ENLACE ====== */
-function copyLink(url){
-  if (!url){ Swal.fire("Aviso","No hay URL de PDF en la fila.","info"); return; }
-  navigator.clipboard.writeText(url);
-  Swal.fire("Copiado","Enlace copiado al portapapeles","success");
+  }catch(e){ Swal.fire("Error","No se pudo regenerar","error"); }
 }
 
 /* ====== SYNC ====== */
 async function doSync(){
   try{
-    const res = await fetch(API_FORM + "?action=sync");
-    const js = await res.json();
-    Swal.fire("Sincronizado", "seq="+(js.syncedTo??"-")+" | next="+(js.nextPreview??"-"), "success");
-  }catch(e){
-    Swal.fire("Error","No se pudo sincronizar","error");
-  }
+    const js = await (await fetch(API_FORM + "?action=sync")).json();
+    Swal.fire("Sincronizado", `seq=${js.syncedTo??"-"} | next=${js.nextPreview??"-"}`, "success");
+  }catch{ Swal.fire("Error","No se pudo sincronizar","error"); }
 }
 
-/* ====== UTIL ====== */
+/* ====== UTILS ====== */
 function isoGuess(s){
   if (!s) return "";
   const t = String(s).trim();
-  if (/^\d{4}-\d{2}-\d{2}$/.test(t)) return t; // ya ISO
-  // intenta DD/MM/YYYY
+  if (/^\d{4}-\d{2}-\d{2}$/.test(t)) return t;
   const m = t.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
   if (m){ const d=m[1].padStart(2,'0'), mm=m[2].padStart(2,'0'); return `${m[3]}-${mm}-${d}`; }
-  // si vino "13 de agosto de 2025" lo dejamos vacío para no romper
   return "";
 }
 
