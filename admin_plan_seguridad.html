@@ -11,17 +11,19 @@
   *{box-sizing:border-box} html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.35 "Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
 
-  /* NAV (única) */
+  /* NAV ÚNICA */
   .nav{position:sticky;top:0;z-index:10;background:var(--brand);color:#fff;box-shadow:0 2px 10px rgba(17,24,39,.15)}
-  .nav .bar{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;padding:.65rem 1rem}
-  .nav .brand{font-weight:700;letter-spacing:.2px}
+  .nav .bar{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:.5rem 1rem}
+  .nav .brand{display:flex;align-items:center;gap:10px}
+  .nav .brand img{height:34px;width:auto;display:block}
+  .nav .brand .title{font-weight:800;letter-spacing:.2px}
   .nav .links{margin-left:auto;display:flex;gap:.25rem}
   .nav a{color:#fff;text-decoration:none;padding:.45rem .65rem;border-radius:10px}
   .nav a:hover{background:rgba(255,255,255,.12)}
 
   .wrap{max-width:1200px;margin:18px auto;padding:0 14px}
 
-  /* HERO compacto BLANCO (no parece barra) */
+  /* HERO (compacto, sin logo para evitar doble encabezado) */
   .hero{
     background:#fff; color:var(--brand);
     border:1px solid var(--line);
@@ -29,9 +31,7 @@
     display:flex; align-items:center; gap:16px;
     box-shadow:0 10px 30px rgba(17,24,39,.04); margin-bottom:14px;
   }
-  .hero img{height:52px;width:auto}
-  .hero .txt{line-height:1.2}
-  .hero .title{font-size:1.55rem;font-weight:800;margin:0}
+  .hero .title{font-size:1.35rem;font-weight:800;margin:0}
   .hero .sub{font-size:.95rem;color:var(--muted);margin-top:2px}
 
   .panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(17,24,39,.06)}
@@ -73,18 +73,20 @@
     .row{grid-template-columns:1fr}
     .kpis{grid-template-columns:1fr}
     .hero{padding:12px 14px}
-    .hero img{height:44px}
-    .hero .title{font-size:1.3rem}
+    .hero .title{font-size:1.2rem}
     .hero .sub{font-size:.88rem}
   }
 </style>
 </head>
 <body>
 
-<!-- NAV ÚNICA -->
+<!-- NAV ÚNICA con logo blanco arriba -->
 <nav class="nav">
   <div class="bar">
-    <div class="brand">Administración de Certificados</div>
+    <div class="brand">
+      <img src="Logo el NUEVO ECUADOR.png" alt="El Nuevo Ecuador">
+      <div class="title">Administración de Certificados</div>
+    </div>
     <div class="links">
       <a href="index.html">Inicio</a>
       <a href="plan_seguridad.html">Certificados</a>
@@ -94,10 +96,9 @@
 
 <div class="wrap">
 
-  <!-- HERO compacto BLANCO -->
+  <!-- Encabezado compacto (sin logo para evitar doble) -->
   <section class="hero" aria-label="Encabezado institucional">
-    <img src="Logo el NUEVO ECUADOR.png" alt="El Nuevo Ecuador">
-    <div class="txt">
+    <div>
       <h1 class="title">Secretaría Nacional de Gestión de Riesgos</h1>
       <div class="sub">Coordinación Zonal 5-8 · Uso Interno y Personal</div>
     </div>
@@ -226,6 +227,10 @@ function icon(name){
   };
   return map[name]||'';
 }
+function addCacheBuster(url){
+  try{ const u = new URL(url); u.searchParams.set('_', Date.now()); return u.toString(); }
+  catch{ return url; }
+}
 
 /* ====== UI ====== */
 $('ps').addEventListener('change', ()=>{ state.ps=+$('ps').value; load(); });
@@ -281,7 +286,7 @@ async function load(){
         <td>${safe(ci)}</td>
         <td>${safe(femi)}</td>
         <td>${badge(est)}</td>
-        <td>${pdf ? `<a href="${pdf}" target="_blank" title="Abrir PDF">${icon('open')}</a>` : ''}</td>
+        <td>${pdf ? `<a href="${addCacheBuster(pdf)}" target="_blank" title="Abrir PDF">${icon('open')}</a>` : ''}</td>
         <td style="display:flex;gap:.35rem;">
           <button class="icon" title="Editar" onclick="openRow(${r.__row})">${icon('edit')}</button>
           <button class="icon" title="Regenerar/Descargar" onclick="askRegen(${r.__row})">${icon('refresh')}</button>
@@ -389,7 +394,7 @@ async function doDelete(row){
   load();
 }
 
-/* ====== REGEN: preguntar primero ====== */
+/* ====== REGEN (check → decisión) ====== */
 async function askRegen(row){
   try{
     const u = new URL(API_PANEL);
@@ -414,7 +419,7 @@ async function askRegen(row){
         denyButtonText: "Descargar existente",
         cancelButtonText: "Cancelar"
       });
-      if (choice.isDenied){ window.open(info.pdf, "_blank"); return; }
+      if (choice.isDenied){ window.open(addCacheBuster(info.pdf), "_blank"); return; }
       if (choice.isConfirmed){ await doRegenForce(row); }
       return;
     }
@@ -440,7 +445,7 @@ async function doRegenForce(row){
   u.searchParams.set("mode", "force");
   const d = await (await fetch(u)).json().catch(()=>({}));
   if (!d || d.ok===false){ Swal.fire("Error","No se pudo regenerar el PDF","error"); return; }
-  if (d.pdf) window.open(d.pdf, "_blank");
+  if (d.pdf) window.open(addCacheBuster(d.pdf), "_blank");
   Swal.fire("Listo","PDF generado y enlace actualizado","success");
   load();
 }
