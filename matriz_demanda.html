@@ -178,8 +178,8 @@
         </div>
 
         <div class="actions">
-          <button type="button" class="secondary" onclick="document.getElementById('formulario').reset(); clearAuto();">Limpiar</button>
-          <button type="submit">Enviar formulario</button>
+          <button type="button" class="secondary" id="btnLimpiar">Limpiar</button>
+          <button type="submit" id="btnEnviar">Enviar formulario</button>
         </div>
       </form>
     </div>
@@ -352,6 +352,16 @@ window.addEventListener('DOMContentLoaded', () => {
   // Listeners de fecha/hora
   document.getElementById("fechaSolicitud").addEventListener("change", calcularTiempo);
   document.getElementById("fechaEntrega").addEventListener("change", calcularTiempo);
+
+  // Botón limpiar
+  document.getElementById("btnLimpiar").addEventListener("click", ()=>{
+    document.getElementById("formulario").reset();
+    clearAuto();
+  });
+
+  // Input cédula solo números
+  const contacto = document.getElementById("contacto");
+  contacto.setAttribute("placeholder","Teléfono / correo");
 });
 
 /* =======================
@@ -385,7 +395,6 @@ function contarDiasLaborables(inicio, fin) {
   try{
     let start = new Date(inicio), end = new Date(fin), count = 0;
     if (isNaN(start) || isNaN(end)) return 0;
-    // Normalizamos a medianoche para contar días completos
     start = new Date(start.getFullYear(), start.getMonth(), start.getDate());
     end   = new Date(end.getFullYear(), end.getMonth(), end.getDate());
     while (start <= end) {
@@ -400,36 +409,80 @@ function contarDiasLaborables(inicio, fin) {
 function calcularTiempo() {
   const ini = document.getElementById("fechaSolicitud").value;
   const fin = document.getElementById("fechaEntrega").value;
-  if (!ini || !fin) { document.getElementById("tiempoAtencion").value = ""; document.getElementById("cumple").value = ""; return; }
+
+  if (!ini || !fin) {
+    document.getElementById("tiempoAtencion").value = "";
+    document.getElementById("cumple").value = "Pendiente";
+    return;
+  }
 
   const dias = contarDiasLaborables(ini, fin);
   document.getElementById("tiempoAtencion").value = dias;
 
   const establecido = parseInt(document.getElementById("tiempoEstablecido").value || "0", 10);
-  if (!establecido){ document.getElementById("cumple").value = ""; return; }
+  if (!establecido){
+    document.getElementById("cumple").value = "Pendiente";
+    return;
+  }
 
-  // Regla: si no hay rango válido, vacío; caso contrario compara
   document.getElementById("cumple").value = (dias <= establecido) ? "Cumple" : "No Cumple";
+}
+
+/* =======================
+   VALIDACIONES EXTRA
+   ======================= */
+// Cédula ecuatoriana (10 dígitos)
+function validarCedulaEc(ced){
+  if(!/^\d{10}$/.test(ced)) return false;
+  const prov = parseInt(ced.slice(0,2),10);
+  if(prov < 1 || prov > 24) return false;
+  const d = ced.split('').map(n=>parseInt(n,10));
+  let suma = 0;
+  for (let i=0; i<9; i++){
+    let val = d[i];
+    if (i % 2 === 0){ // posiciones impares 0,2,4,6,8 (1,3,5,7,9)
+      val = val * 2; if (val > 9) val -= 9;
+    }
+    suma += val;
+  }
+  const decena = Math.ceil(suma / 10) * 10;
+  const verif = (decena - suma) % 10;
+  return verif === d[9];
 }
 
 /* =======================
    ENVÍO A GOOGLE FORMS
    ======================= */
-/* Cambia la URL por la de tu formulario si actualizas el ID */
 const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSfz-2g5cH9E5wDEzX_LUZQ2EpBSsrWiagTHrRZQHwE1W_Emcg/formResponse";
 
-function enviarFormulario(e) {
+async function enviarFormulario(e) {
   e.preventDefault();
 
+  const btn = document.getElementById("btnEnviar");
+  btn.disabled = true;
+
   // Validación mínima
-  if (!document.getElementById("tramite").value){
-    Swal.fire("Falta información","Selecciona un trámite.","warning"); return;
+  const faltantes = [];
+  const reqIds = ["tramite","servicio","producto","fechaSolicitud","fechaEntrega","tipoUsuario","canalAcceso","requirente","contacto","proposito","tecnico"];
+  reqIds.forEach(id => { const el = document.getElementById(id); if(!el || !String(el.value||"").trim()) faltantes.push(id); });
+
+  if (faltantes.length){
+    btn.disabled = false;
+    Swal.fire("Falta información","Completa: " + faltantes.join(", "), "warning");
+    return;
+  }
+
+  // Validación cédula si existe en el DOM (puede no estar en esta versión)
+  const cedulaEl = document.getElementById("cedula");
+  if (cedulaEl && cedulaEl.value && !validarCedulaEc(cedulaEl.value.trim())){
+    btn.disabled = false;
+    Swal.fire("Cédula inválida","Verifica que el número de cédula sea correcto (10 dígitos).","error");
+    return;
   }
 
   const fs = document.getElementById("fechaSolicitud").value || "";
   const fe = document.getElementById("fechaEntrega").value || "";
 
-  // Helpers seguros para fechas
   const [fsDate, fsTime] = fs.split("T");
   const [feDate, feTime] = fe.split("T");
 
@@ -486,11 +539,10 @@ function enviarFormulario(e) {
   form.submit();
   form.remove();
 
-  Swal.fire({ icon:'success', title:'Formulario enviado', text:'Los datos han sido registrados correctamente.' })
-    .then(() => {
-      document.getElementById("formulario").reset();
-      clearAuto();
-    });
+  await Swal.fire({ icon:'success', title:'Formulario enviado', text:'Los datos han sido registrados correctamente.' });
+  document.getElementById("formulario").reset();
+  clearAuto();
+  btn.disabled = false;
 }
 </script>
 </body>
