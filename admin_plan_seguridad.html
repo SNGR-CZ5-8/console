@@ -10,8 +10,6 @@
   :root{ --brand:#2F338F; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --bg:#f5f6fb; }
   *{box-sizing:border-box} html,body{height:100%}
   body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.35 "Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-
-  /* NAV ÚNICA */
   .nav{position:sticky;top:0;z-index:10;background:var(--brand);color:#fff;box-shadow:0 2px 10px rgba(17,24,39,.15)}
   .nav .bar{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:.5rem 1rem}
   .nav .brand{display:flex;align-items:center;gap:10px}
@@ -20,28 +18,16 @@
   .nav .links{margin-left:auto;display:flex;gap:.25rem}
   .nav a{color:#fff;text-decoration:none;padding:.45rem .65rem;border-radius:10px}
   .nav a:hover{background:rgba(255,255,255,.12)}
-
   .wrap{max-width:1200px;margin:18px auto;padding:0 14px}
-
-  /* HERO (compacto, sin logo para evitar doble encabezado) */
-  .hero{
-    background:#fff; color:var(--brand);
-    border:1px solid var(--line);
-    border-radius:16px; padding:14px 18px;
-    display:flex; align-items:center; gap:16px;
-    box-shadow:0 10px 30px rgba(17,24,39,.04); margin-bottom:14px;
-  }
+  .hero{background:#fff;color:var(--brand);border:1px solid var(--line);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:16px;box-shadow:0 10px 30px rgba(17,24,39,.04);margin-bottom:14px}
   .hero .title{font-size:1.35rem;font-weight:800;margin:0}
   .hero .sub{font-size:.95rem;color:var(--muted);margin-top:2px}
-
   .panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(17,24,39,.06)}
   .title{font-size:1.15rem;font-weight:700;color:var(--brand);margin:6px 2px 14px}
-
   .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
   .kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:10px}
   .kpi h4{margin:0 0 6px;font-weight:600;color:#374151}
   .kpi .num{font-size:1.35rem;font-weight:700}
-
   .toolbar{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 12px}
   input,select,button{font:14px "Inter",sans-serif;border:1px solid #cfd4e1;border-radius:10px;padding:9px 11px}
   input[type="search"]{min-width:260px;flex:1}
@@ -50,7 +36,6 @@
   button.icon{background:#fff;color:var(--brand);border:1px solid #c7ccff;padding:6px 8px;display:inline-flex;align-items:center;justify-content:center}
   button.icon svg{width:16px;height:16px}
   button.small{padding:7px 10px}
-
   .grid{overflow:auto;border:1px solid var(--line);border-radius:14px}
   table{width:100%;border-collapse:collapse;background:#fff}
   th,td{padding:9px 10px;border-bottom:1px solid #f0f1f4;vertical-align:middle;white-space:nowrap}
@@ -59,32 +44,20 @@
   .clip{max-width:260px;overflow:hidden;text-overflow:ellipsis}
   .pill{padding:2px 7px;border-radius:999px;font-size:.78rem}
   .ok{background:#e8fff0;color:#065f46}.bad{background:#fee2e2;color:#991b1b}
-
   .layout{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-top:14px}
   .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
   .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
   label{display:block;font-size:.9rem;color:#4b5563;margin-bottom:4px}
   .muted{color:var(--muted)}
-
   .foot{margin-top:20px;background:var(--brand);color:#fff;text-align:center;padding:14px;border-radius:14px}
-
-  @media (max-width:1000px){
-    .layout{grid-template-columns:1fr}
-    .row{grid-template-columns:1fr}
-    .kpis{grid-template-columns:1fr}
-    .hero{padding:12px 14px}
-    .hero .title{font-size:1.2rem}
-    .hero .sub{font-size:.88rem}
-  }
+  @media (max-width:1000px){ .layout{grid-template-columns:1fr} .row{grid-template-columns:1fr} .kpis{grid-template-columns:1fr} .hero{padding:12px 14px} .hero .title{font-size:1.2rem} .hero .sub{font-size:.88rem} }
 </style>
 </head>
 <body>
-
-<!-- NAV ÚNICA con logo blanco arriba -->
 <nav class="nav">
   <div class="bar">
     <div class="brand">
-      <img src="Logo el NUEVO ECUADOR.png" alt="El Nuevo Ecuador" loading="lazy">
+      <img src="Logo el NUEVO ECUADOR.png" alt="El Nuevo Ecuador">
       <div class="title">Administración de Certificados</div>
     </div>
     <div class="links">
@@ -95,8 +68,6 @@
 </nav>
 
 <div class="wrap">
-
-  <!-- Encabezado compacto (sin logo para evitar doble) -->
   <section class="hero" aria-label="Encabezado institucional">
     <div>
       <h1 class="title">Secretaría Nacional de Gestión de Riesgos</h1>
@@ -142,9 +113,7 @@
             <th>Acciones</th>
           </tr>
         </thead>
-        <tbody id="tbody">
-          <tr><td colspan="8" style="text-align:center">Cargando…</td></tr>
-        </tbody>
+        <tbody id="tbody"><tr><td colspan="8" style="text-align:center">Cargando…</td></tr></tbody>
       </table>
     </div>
 
@@ -207,11 +176,9 @@
 </div>
 
 <script>
-/* ====== CONFIG ====== */
 const API_PANEL = "https://white-night-b8de.dylanvillasagua.workers.dev/panel";
 const API_FORM  = "https://white-night-b8de.dylanvillasagua.workers.dev/";
 
-/* ====== STATE & HELPERS ====== */
 const $ = (id)=>document.getElementById(id);
 const state = { page:1, ps:20, q:'', orderBy:'N° de Trámite', dir:'desc', selected:null, pdfHeader:null };
 
@@ -227,12 +194,8 @@ function icon(name){
   };
   return map[name]||'';
 }
-function addCacheBuster(url){
-  try{ const u = new URL(url); u.searchParams.set('_', Date.now()); return u.toString(); }
-  catch{ return url; }
-}
+function addCacheBuster(url){ try{ const u = new URL(url); u.searchParams.set('_', Date.now()); return u.toString(); } catch{ return url; } }
 
-/* ====== UI ====== */
 $('ps').addEventListener('change', ()=>{ state.ps=+$('ps').value; load(); });
 $('orderBy').addEventListener('change', ()=>{ state.orderBy=$('orderBy').value; load(); });
 $('dir').addEventListener('change', ()=>{ state.dir=$('dir').value; load(); });
@@ -248,7 +211,6 @@ $('btnCancelar').addEventListener('click', ()=>{
   state.selected=null;
 });
 
-/* ====== LIST ====== */
 async function load(){
   try{
     const u = new URL(API_PANEL);
@@ -294,13 +256,11 @@ async function load(){
         </td>`;
       tb.appendChild(tr);
     });
-
   }catch(err){
     Swal.fire("Error", err.message || "No se pudo cargar la lista", "error");
   }
 }
 
-/* ====== OPEN ====== */
 async function openRow(row){
   try{
     const u = new URL(API_PANEL);
@@ -338,13 +298,11 @@ async function openRow(row){
   }
 }
 
-/* ====== SAVE ====== */
 async function saveEdit(){
   if (!state.selected) return;
   const p = new URLSearchParams();
   p.set("action","update");
   p.set("__row", String(state.selected));
-
   p.set("Evento Deportivo", $('f_evento').value);
   p.set("Presentado por", $('f_presentadoPor').value);
   p.set("Cédula de Identidad", $('f_cedula').value);
@@ -371,7 +329,6 @@ async function saveEdit(){
   load();
 }
 
-/* ====== DELETE ====== */
 async function doDelete(row){
   const target = row || state.selected;
   if (!target){ Swal.fire("Aviso","Selecciona un registro primero","info"); return; }
@@ -444,7 +401,10 @@ async function doRegenForce(row){
   u.searchParams.set("row", row);
   u.searchParams.set("mode", "force");
   const d = await (await fetch(u)).json().catch(()=>({}));
-  if (!d || d.ok===false){ Swal.fire("Error","No se pudo regenerar el PDF","error"); return; }
+  if (!d || d.ok===false){
+    Swal.fire("Error", (d && d.error) ? d.error : "No se pudo regenerar el PDF", "error");
+    return;
+  }
   if (d.pdf) window.open(addCacheBuster(d.pdf), "_blank");
   Swal.fire("Listo","PDF generado y enlace actualizado","success");
   load();
@@ -493,9 +453,7 @@ function parseTimeAny(v){
   return '';
 }
 
-/* INIT */
 document.addEventListener('DOMContentLoaded', load);
 </script>
 </body>
 </html>
-
