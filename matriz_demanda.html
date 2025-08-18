@@ -1,516 +1,384 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Matriz de Demanda de Servicios</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Matriz de Demanda de Servicios</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <style>
+    :root{
+      --brand:#2F338F; --bg:#f4f6f9; --ink:#333; --line:#e6e9f3;
+      --card:#fff; --muted:#6b7280;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.4 'Roboto',system-ui,Segoe UI,Arial,sans-serif;padding-bottom:72px}
 
-<style>
-  :root{ --brand:#2F338F; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --bg:#f5f6fb; }
-  *{box-sizing:border-box} html,body{height:100%}
-  body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.35 "Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+    /* HEADER */
+    header{background:var(--brand);color:#fff;text-align:center;padding:1.7rem 1rem;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+    header .wrap{max-width:1100px;margin:0 auto}
+    header img{max-height:70px;display:block;margin:0 auto .6rem}
+    header h1{font-size:1.9rem;font-weight:700;margin:0}
+    header p{font-size:.95rem;opacity:.9;margin-top:.25rem}
 
-  /* NAV */
-  .nav{position:sticky;top:0;z-index:10;background:var(--brand);color:#fff;box-shadow:0 2px 10px rgba(17,24,39,.15)}
-  .nav .bar{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:.5rem 1rem}
-  .nav .brand{display:flex;align-items:center;gap:10px}
-  .nav .brand img{height:34px;width:auto;display:block}
-  .nav .brand .title{font-weight:800;letter-spacing:.2px}
-  .nav .links{margin-left:auto;display:flex;gap:.25rem}
-  .nav a{color:#fff;text-decoration:none;padding:.45rem .65rem;border-radius:10px}
-  .nav a:hover{background:rgba(255,255,255,.12)}
+    /* CARD */
+    .container{max-width:1100px;margin:2rem auto;background:var(--card);padding:2rem;border-radius:18px;border:1px solid var(--line);box-shadow:0 8px 20px rgba(0,0,0,.08)}
+    h2{margin:0 0 1.1rem;text-align:center;color:var(--brand);font-size:1.6rem}
+    .sub{color:var(--muted);text-align:center;margin:-.35rem 0 1.1rem}
 
-  /* WRAP + HERO */
-  .wrap{max-width:1200px;margin:18px auto;padding:0 14px}
-  .hero{background:#fff;color:var(--brand);border:1px solid var(--line);border-radius:16px;padding:14px 18px;display:flex;align-items:center;gap:16px;box-shadow:0 10px 30px rgba(17,24,39,.04);margin-bottom:14px}
-  .hero .title{font-size:1.35rem;font-weight:800;margin:0}
-  .hero .sub{font-size:.95rem;color:var(--muted);margin-top:2px}
+    /* FORM */
+    form{display:grid;grid-template-columns:1fr 1fr;gap:1rem 1.5rem}
+    .field{display:flex;flex-direction:column}
+    .full{grid-column:1/-1}
+    label{font-size:.95rem;color:#4b5563;margin:0 0 .35rem 2px}
+    input,select,textarea{width:100%;padding:12px 14px;border:1px solid #cfd4e1;border-radius:12px;font-size:1rem;transition:border-color .2s,box-shadow .2s}
+    input:focus,select:focus,textarea:focus{outline:none;border-color:var(--brand);box-shadow:0 0 0 3px rgba(47,51,143,.12)}
+    textarea{resize:vertical;min-height:70px}
 
-  /* PANEL */
-  .panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(17,24,39,.06)}
-  .title{font-size:1.15rem;font-weight:700;color:var(--brand);margin:6px 2px 14px}
+    /* ACTIONS */
+    .actions{grid-column:1/-1;display:flex;gap:.75rem;justify-content:flex-end;margin-top:.5rem}
+    .btn{background:var(--brand);color:#fff;border:none;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer}
+    .btn.secondary{background:#eef2ff;color:var(--brand);border:1px solid #c7ccff}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
 
-  /* FORM LAYOUT */
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  .full{grid-column:1 / -1}
-  label{display:block;font-size:.9rem;color:#4b5563;margin-bottom:4px}
-  input,select,textarea{width:100%;border:1px solid #cfd4e1;border-radius:10px;padding:10px 11px;font:14px "Inter",sans-serif}
-  textarea{resize:vertical}
-  .muted{color:var(--muted)}
+    /* FOOTER */
+    footer{position:fixed;left:0;bottom:0;width:100%;background:var(--brand);color:#fff;text-align:center;padding:.85rem;font-size:.9rem;box-shadow:0 -2px 8px rgba(0,0,0,.12)}
 
-  /* BUTTONS */
-  .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
-  button{background:var(--brand);color:#fff;font-weight:700;border:none;cursor:pointer;border-radius:10px;padding:10px 14px}
-  button.secondary{background:#eef2ff;color:var(--brand);border:1px solid #c7ccff}
-  button:disabled{opacity:.6;cursor:not-allowed}
-
-  /* FOOT */
-  .foot{margin-top:20px;background:var(--brand);color:#fff;text-align:center;padding:14px;border-radius:14px}
-
-  @media (max-width:1000px){
-    .grid{grid-template-columns:1fr}
-  }
-</style>
+    @media (max-width:860px){ form{grid-template-columns:1fr} }
+  </style>
 </head>
 <body>
-  <!-- NAV -->
-  <nav class="nav">
-    <div class="bar">
-      <div class="brand">
-        <img src="Logo el NUEVO ECUADOR.png" alt="El Nuevo Ecuador">
-        <div class="title">Administración de Certificados</div>
-      </div>
-      <div class="links">
-        <a href="index.html">Inicio</a>
-        <a href="plan_seguridad.html">Certificados</a>
-        <a href="#" aria-current="page" style="background:rgba(255,255,255,.12)">Matriz de Demanda</a>
-      </div>
-    </div>
-  </nav>
 
+<header>
   <div class="wrap">
-    <!-- HERO -->
-    <section class="hero" aria-label="Encabezado institucional">
-      <div>
-        <h1 class="title">Secretaría Nacional de Gestión de Riesgos</h1>
-        <div class="sub">Coordinación Zonal 5-8 · Matriz de Demanda de Servicios</div>
-      </div>
-    </section>
+    <img src="Logo el NUEVO ECUADOR.png" alt="El Nuevo Ecuador">
+    <h1>Secretaría Nacional de Gestión de Riesgos</h1>
+    <p>Coordinación Zonal 5-8 | Uso Interno y Personal</p>
+  </div>
+</header>
 
-    <!-- PANEL / FORM -->
-    <div class="panel">
-      <div class="title">Formulario institucional</div>
+<main class="container">
+  <h2>Matriz de Demanda de Servicios</h2>
+  <div class="sub">“Servicio”, “Producto” y “Tiempo establecido” se autocompletan según el Trámite.</div>
 
-      <div class="muted" style="margin-bottom:10px">
-        Complete los campos. “Servicio”, “Producto” y “Tiempo establecido” se autocompletan según el Trámite.
-      </div>
-
-      <form id="formulario" onsubmit="enviarFormulario(event)">
-        <div class="grid">
-          <div class="full">
-            <label for="tramite">Trámite</label>
-            <select id="tramite" name="tramite" onchange="autocompletar()" required>
-              <option value="">Seleccione un trámite</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Servicio</label>
-            <input type="text" id="servicio" name="servicio" readonly required />
-          </div>
-
-          <div>
-            <label>Producto</label>
-            <input type="text" id="producto" name="producto" readonly required />
-          </div>
-
-          <div>
-            <label>Fecha y hora de solicitud</label>
-            <input type="datetime-local" id="fechaSolicitud" name="fechaSolicitud" required />
-          </div>
-
-          <div>
-            <label>Fecha y hora de entrega</label>
-            <input type="datetime-local" id="fechaEntrega" name="fechaEntrega" required />
-          </div>
-
-          <div>
-            <label>Tiempo de atención (días hábiles)</label>
-            <input type="text" id="tiempoAtencion" name="tiempoAtencion" readonly required />
-          </div>
-
-          <div>
-            <label>Tiempo establecido (días)</label>
-            <input type="text" id="tiempoEstablecido" name="tiempoEstablecido" readonly required />
-          </div>
-
-          <div class="full">
-            <label>Resultado</label>
-            <input type="text" id="cumple" name="cumple" readonly required />
-          </div>
-
-          <div>
-            <label>Tipo de usuario / Beneficiario</label>
-            <select id="tipoUsuario" required>
-              <option value="">Seleccione</option>
-              <option>EXTERNO</option>
-              <option>INTERNO</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Canal de acceso</label>
-            <select id="canalAcceso" required>
-              <option value="">Seleccione</option>
-              <option>Planificado (solo servicios sin trámite)</option>
-              <option>Presencial</option>
-              <option>No presencial (Correo electrónico, Quipux, Contacto Ciudadano, GOB.EC)</option>
-              <option>Virtual (App web) – solo Capacitación Virtual</option>
-            </select>
-          </div>
-
-          <div>
-            <label>Nombre del requirente / Razón social</label>
-            <input type="text" id="requirente" required />
-          </div>
-
-          <div>
-            <label>Contacto</label>
-            <input type="text" id="contacto" required />
-          </div>
-
-          <div class="full">
-            <label>Propósito del servicio</label>
-            <textarea id="proposito" rows="2" required></textarea>
-          </div>
-
-          <div class="full">
-            <label>Observaciones</label>
-            <textarea id="observaciones" rows="2"></textarea>
-          </div>
-
-          <div class="full">
-            <label>Técnico responsable del trámite</label>
-            <input type="text" id="tecnico" required />
-          </div>
-        </div>
-
-        <div class="actions">
-          <button type="button" class="secondary" id="btnLimpiar">Limpiar</button>
-          <button type="submit" id="btnEnviar">Enviar formulario</button>
-        </div>
-      </form>
+  <form id="formulario" onsubmit="enviarFormulario(event)" autocomplete="off" novalidate>
+    <div class="field full">
+      <label for="tramite">Trámite</label>
+      <select id="tramite" name="tramite" onchange="autocompletar()" required>
+        <option value="">Seleccione un trámite</option>
+      </select>
     </div>
 
-    <footer class="foot">© 2025 Secretaría Nacional de Gestión de Riesgos – CZ 5-8</footer>
-  </div>
+    <div class="field">
+      <label>Servicio</label>
+      <input id="servicio" name="servicio" readonly required>
+    </div>
 
-  <!-- IFRAME para envío silencioso a Google Forms -->
-  <iframe name="dummyFrame" style="display:none;"></iframe>
+    <div class="field">
+      <label>Producto</label>
+      <input id="producto" name="producto" readonly required>
+    </div>
+
+    <div class="field">
+      <label>Fecha y hora de solicitud</label>
+      <input type="datetime-local" id="fechaSolicitud" name="fechaSolicitud" required>
+    </div>
+
+    <div class="field">
+      <label>Fecha y hora de entrega</label>
+      <input type="datetime-local" id="fechaEntrega" name="fechaEntrega" required>
+    </div>
+
+    <div class="field">
+      <label>Tiempo de atención (días hábiles)</label>
+      <input id="tiempoAtencion" name="tiempoAtencion" readonly required>
+    </div>
+
+    <div class="field">
+      <label>Tiempo establecido (días)</label>
+      <input id="tiempoEstablecido" name="tiempoEstablecido" readonly required>
+    </div>
+
+    <div class="field full">
+      <label>Resultado</label>
+      <input id="cumple" name="cumple" readonly required>
+    </div>
+
+    <div class="field">
+      <label>Tipo de usuario / Beneficiario</label>
+      <select id="tipoUsuario" required>
+        <option value="">Seleccione</option>
+        <option>EXTERNO</option>
+        <option>INTERNO</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Canal de acceso</label>
+      <select id="canalAcceso" required>
+        <option value="">Seleccione</option>
+        <option>Planificado (solo servicios sin trámite)</option>
+        <option>Presencial</option>
+        <option>No presencial (Correo electrónico, Quipux, Contacto Ciudadano, GOB.EC)</option>
+        <option>Virtual (App web) – solo Capacitación Virtual</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Nombre del requirente / Razón social</label>
+      <input id="requirente" required>
+    </div>
+
+    <div class="field">
+      <label>Contacto</label>
+      <input id="contacto" placeholder="Teléfono / correo" required>
+    </div>
+
+    <div class="field full">
+      <label>Propósito del servicio</label>
+      <textarea id="proposito" rows="2" required></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Observaciones</label>
+      <textarea id="observaciones" rows="2"></textarea>
+    </div>
+
+    <div class="field full">
+      <label>Técnico responsable del trámite</label>
+      <input id="tecnico" required>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn secondary" id="btnLimpiar">Limpiar</button>
+      <button type="submit" class="btn" id="btnEnviar">Enviar formulario</button>
+    </div>
+  </form>
+</main>
+
+<footer>© 2025 Secretaría Nacional de Gestión de Riesgos – CZ 5-8 | Uso Interno</footer>
+
+<!-- IFRAME para envío silencioso a Google Forms -->
+<iframe name="dummyFrame" style="display:none"></iframe>
 
 <script>
-/* =======================
-   BASE DE DATOS LOCAL
-   ======================= */
+/* ===== Base de datos local (Trámite → Servicio/Producto/Tiempo) ===== */
 const baseDatos = {
   "Emisión de informe de análisis de amenaza o inspección técnica para la reducción del riesgo del desastres": {
-    servicio: "Análisis de amenaza o riesgo aceptable para la reducción del riesgo de desastres",
-    producto: "Informe de análisis de amenaza o Informe de inspección técnica",
-    tiempo: "30"
+    servicio:"Análisis de amenaza o riesgo aceptable para la reducción del riesgo de desastres",
+    producto:"Informe de análisis de amenaza o Informe de inspección técnica",
+    tiempo:"30"
   },
   "Emisión de informe de estimación del riesgo aceptable para la reducción del riesgo de desastres": {
-    servicio: "Análisis de amenaza o riesgo aceptable para la reducción del riesgo de desastres",
-    producto: "Informe de estimación del riesgo aceptable",
-    tiempo: "30"
+    servicio:"Análisis de amenaza o riesgo aceptable para la reducción del riesgo de desastres",
+    producto:"Informe de estimación del riesgo aceptable",
+    tiempo:"30"
   },
   "Atención a requerimientos de información para la gestión del riesgo de desastres": {
-    servicio: "Acceso a la información para la gestión del riesgo de desastres",
-    producto: "Información histórica de afectaciones por eventos peligrosos o Información espacial de gestión de riesgos de desastres",
-    tiempo: "15"
+    servicio:"Acceso a la información para la gestión del riesgo de desastres",
+    producto:"Información histórica de afectaciones por eventos peligrosos o Información espacial de gestión de riesgos de desastres",
+    tiempo:"15"
   },
   "Atención a requerimientos de capacitación en gestión del riesgo de desastres para grupos de interés": {
-    servicio: "Capacitación en gestión del riesgo de desastres",
-    producto: "Certificado de Capacitación en gestión de riesgos",
-    tiempo: "15"
+    servicio:"Capacitación en gestión del riesgo de desastres",
+    producto:"Certificado de Capacitación en gestión de riesgos",
+    tiempo:"15"
   },
   "Inscripción en cursos virtuales de capacitación en gestión del riesgo de desastres": {
-    servicio: "Capacitación en gestión del riesgo de desastres",
-    producto: "Certificado de Capacitación en gestión de riesgos",
-    tiempo: "30"
+    servicio:"Capacitación en gestión del riesgo de desastres",
+    producto:"Certificado de Capacitación en gestión de riesgos",
+    tiempo:"30"
   },
   "Atención a requerimientos de Asistencia técnica para la creación o fortalecimiento de la Unidad de Gestión de Riesgos": {
-    servicio: "Asistencia técnica para la creación o fortalecimiento de la Unidad de Gestión de Riesgos",
-    producto: "Informe de asistencia técnica para la creación o fortalecimiento de la Unidad de Gestión de Riesgos",
-    tiempo: "15"
+    servicio:"Asistencia técnica para la creación o fortalecimiento de la Unidad de Gestión de Riesgos",
+    producto:"Informe de asistencia técnica para la creación o fortalecimiento de la Unidad de Gestión de Riesgos",
+    tiempo:"15"
   },
   "Asistencia técnica para la creación o fortalecimiento de la Unidad de Gestión de Riesgos - Sin trámite": {
-    servicio: "Asistencia técnica para la creación o fortalecimiento de la Unidad de Gestión de Riesgos",
-    producto: "Informe de asistencia técnica para la creación o fortalecimiento de la Unidad de Gestión de Riesgos",
-    tiempo: "15"
+    servicio:"Asistencia técnica para la creación o fortalecimiento de la Unidad de Gestión de Riesgos",
+    producto:"Informe de asistencia técnica para la creación o fortalecimiento de la Unidad de Gestión de Riesgos",
+    tiempo:"15"
   },
   "Asistencia técnica para la conformación o fortalecimiento de los Comités Comunitarios de Gestión de Riesgos - Sin trámite": {
-    servicio: "Asistencia técnica para la conformación o fortalecimiento de los Comités Comunitarios de Gestión de Riesgos",
-    producto: "Plan comunitario de gestión de riesgos socializado en asamblea comunitaria",
-    tiempo: "45"
+    servicio:"Asistencia técnica para la conformación o fortalecimiento de los Comités Comunitarios de Gestión de Riesgos",
+    producto:"Plan comunitario de gestión de riesgos socializado en asamblea comunitaria",
+    tiempo:"45"
   },
   "Atención a requerimientos de sensibilización en prevención del riesgo de desastres": {
-    servicio: "Sensibilización en prevención del riesgo de desastres",
-    producto: "Evento de sensibilización en prevención del riesgo de desastres cumplido",
-    tiempo: "15"
+    servicio:"Sensibilización en prevención del riesgo de desastres",
+    producto:"Evento de sensibilización en prevención del riesgo de desastres cumplido",
+    tiempo:"15"
   },
   "Sensibilización en prevención del riesgo de desastres - Sin trámite": {
-    servicio: "Sensibilización en prevención del riesgo de desastres",
-    producto: "Evento de sensibilización en prevención del riesgo de desastres cumplido",
-    tiempo: "15"
+    servicio:"Sensibilización en prevención del riesgo de desastres",
+    producto:"Evento de sensibilización en prevención del riesgo de desastres cumplido",
+    tiempo:"15"
   },
   "Atención a requerimientos de asesoría técnica para la implementación de instrumentos normativos y metodológicos para la reducción del riesgo de desastres": {
-    servicio: "Asesoría técnica para la implementación de instrumentos normativos y metodológicos para la reducción del riesgo de desastres",
-    producto: "Informe de cumplimiento a la asesoría técnica",
-    tiempo: "15"
-  },
-  "Asesoría técnica para la implementación de instrumentos normativos y metodológicos para la reducción del riesgo de desastres - Sin trámite": {
-    servicio: "Asesoría técnica para la implementación de instrumentos normativos y metodológicos para la reducción del riesgo de desastres",
-    producto: "Informe de cumplimiento a la asesoría técnica",
-    tiempo: "15"
-  },
-  "Aprobación del plan de seguridad, prevención y gestión del riesgo de desastres en escenarios y eventos deportivos con aforo mayor a 5000 personas": {
-    servicio: "Concesión de aprobación del plan de seguridad, prevención y gestión de riesgos",
-    producto: "Documento de aprobación de plan de seguridad",
-    tiempo: "15"
+    servicio:"Asesoría técnica para la implementación de instrumentos normativos y metodológicos para la reducción del riesgo de desastres",
+    producto:"Informe de cumplimiento a la asesoría técnica",
+    tiempo:"15"
   },
   "Asesoría técnica para la implementación  de instrumentos normativos y metodológicos para la respuesta ante emergencias y/o desastres - Sin trámite": {
-    servicio: "Asesoría técnica para la implementación de instrumentos normativos y metodológicos para la respuesta ante emergencias y/o desastres",
-    producto: "Informe técnico de respuesta",
-    tiempo: "60"
+    servicio:"Asesoría técnica para la implementación de instrumentos normativos y metodológicos para la respuesta ante emergencias y/o desastres",
+    producto:"Informe técnico de respuesta",
+    tiempo:"60"
   },
   "Atención a requerimientos de asesoría técnica para la implementación de simulaciones y simulacros por eventos peligrosos relacionados con la gestión del riesgo de desastres": {
-    servicio: "Asesoría técnica para simulaciones y simulacros",
-    producto: "Herramienta metodológica + recomendaciones de uso",
-    tiempo: "15"
+    servicio:"Asesoría técnica para simulaciones y simulacros",
+    producto:"Herramienta metodológica + recomendaciones de uso",
+    tiempo:"15"
   },
   "Atención a requerimientos de asistencia humanitaria en situaciones de emergencia": {
-    servicio: "Asistencia humanitaria en situaciones de emergencia",
-    producto: "Entrega de bienes de asistencia humanitaria",
-    tiempo: "5"
+    servicio:"Asistencia humanitaria en situaciones de emergencia",
+    producto:"Entrega de bienes de asistencia humanitaria",
+    tiempo:"5"
   },
   "Atención a requerimientos de participación del voluntariado de protección civil en eventos de concentración masiva": {
-    servicio: "Participación del voluntariado de protección civil",
-    producto: "Participación del voluntariado en el evento",
-    tiempo: "15"
+    servicio:"Participación del voluntariado de protección civil",
+    producto:"Participación del voluntariado en el evento",
+    tiempo:"15"
   },
   "Participación del voluntariado de protección civil para la gestión del riesgo de desastres - Sin trámites": {
-    servicio: "Participación del voluntariado de protección civil",
-    producto: "Participación del voluntariado en el evento peligroso",
-    tiempo: "15"
+    servicio:"Participación del voluntariado de protección civil",
+    producto:"Participación del voluntariado en el evento peligroso",
+    tiempo:"15"
   },
   "Inscripción para ingreso al Voluntariado de Protección Civil del Servicio Nacional de Gestión de Riesgos y Emergencias": {
-    servicio: "Captación y formación del Voluntariado de Protección Civil",
-    producto: "Certificado de formación en protección civil",
-    tiempo: "15"
+    servicio:"Captación y formación del Voluntariado de Protección Civil",
+    producto:"Certificado de formación en protección civil",
+    tiempo:"15"
   },
   "Calificación de alojamientos temporales para la operación en emergencias - Sin trámite": {
-    servicio: "Calificación de alojamientos temporales para la operación en emergencias",
-    producto: "Calificación de alojamientos temporales",
-    tiempo: "3"
+    servicio:"Calificación de alojamientos temporales para la operación en emergencias",
+    producto:"Calificación de alojamientos temporales",
+    tiempo:"3"
   },
   "Atención a requerimientos de acompañamiento técnico para el manejo de alojamientos temporales en emergencias": {
-    servicio: "Acompañamiento técnico para el manejo de alojamientos temporales",
-    producto: "Informe de acompañamiento técnico",
-    tiempo: "15"
+    servicio:"Acompañamiento técnico para el manejo de alojamientos temporales",
+    producto:"Informe de acompañamiento técnico",
+    tiempo:"15"
   },
   "Atención a requerimientos de información de amenazas por eventos peligrosos y eventos peligrosos en curso": {
-    servicio: "Acceso a la Información de amenazas naturales y eventos peligrosos en curso",
-    producto: "Información de gestión de riesgos solicitada",
-    tiempo: "15"
+    servicio:"Acceso a la Información de amenazas naturales y eventos peligrosos en curso",
+    producto:"Información de gestión de riesgos solicitada",
+    tiempo:"15"
   },
   "Aprobación del estatuto y otorgamiento de la personalidad jurídica como Organizacion Social en Gestión de Riesgos": {
-    servicio: "Legalización de organizaciones sociales en gestión de riesgos",
-    producto: "Documento jurídico de aprobación",
-    tiempo: "15"
+    servicio:"Legalización de organizaciones sociales en gestión de riesgos",
+    producto:"Documento jurídico de aprobación",
+    tiempo:"15"
   },
   "Reforma de estatutos de Organizaciones Sociales en Gestión de Riesgos": {
-    servicio: "Legalización de organizaciones sociales en gestión de riesgos",
-    producto: "Documento jurídico de reforma de estatutos",
-    tiempo: "15"
+    servicio:"Legalización de organizaciones sociales en gestión de riesgos",
+    producto:"Documento jurídico de reforma de estatutos",
+    tiempo:"15"
   },
   "Atención a requerimientos de inclusión y exclusión de miembros de las organizaciones sociales en gestión de riesgos": {
-    servicio: "Legalización de organizaciones sociales en gestión de riesgos",
-    producto: "Documento jurídico de inclusión y exclusión",
-    tiempo: "15"
+    servicio:"Legalización de organizaciones sociales en gestión de riesgos",
+    producto:"Documento jurídico de inclusión y exclusión",
+    tiempo:"15"
   },
   "Atención a requerimientos de registro de directiva de organizaciones sociales en gestión de riesgos": {
-    servicio: "Legalización de organizaciones sociales en gestión de riesgos",
-    producto: "Documento jurídico de registro de directiva",
-    tiempo: "15"
+    servicio:"Legalización de organizaciones sociales en gestión de riesgos",
+    producto:"Documento jurídico de registro de directiva",
+    tiempo:"15"
   },
   "Atención a requerimientos de disolución y liquidación voluntaria de organizaciones sociales en gestión de riesgos": {
-    servicio: "Legalización de organizaciones sociales en gestión de riesgos",
-    producto: "Documento jurídico de disolución y liquidación voluntaria",
-    tiempo: "15"
+    servicio:"Legalización de organizaciones sociales en gestión de riesgos",
+    producto:"Documento jurídico de disolución y liquidación voluntaria",
+    tiempo:"15"
   },
   "Atención de requerimientos de acceso a la información pública de la Secretaría de Gestión de Riesgos": {
-    servicio: "Acceso a la información pública de la Secretaría de Gestión de Riesgos",
-    producto: "Información pública en el marco del artículo 7 de la LOTAIP",
-    tiempo: "15"
+    servicio:"Acceso a la información pública de la Secretaría de Gestión de Riesgos",
+    producto:"Información pública en el marco del artículo 7 de la LOTAIP",
+    tiempo:"15"
   }
 };
 
-/* =======================
-   INIT
-   ======================= */
+/* ===== Init ===== */
 window.addEventListener('DOMContentLoaded', () => {
-  // Poblar trámites
-  const tramiteSelect = document.getElementById("tramite");
-  Object.keys(baseDatos).forEach(tramite=>{
-    const opt = document.createElement("option");
-    opt.value = tramite; opt.textContent = tramite;
-    tramiteSelect.appendChild(opt);
+  const sel = document.getElementById('tramite');
+  Object.keys(baseDatos).forEach(t => {
+    const o = document.createElement('option'); o.value=t; o.textContent=t; sel.appendChild(o);
   });
-
-  // Listeners de fecha/hora
-  document.getElementById("fechaSolicitud").addEventListener("change", calcularTiempo);
-  document.getElementById("fechaEntrega").addEventListener("change", calcularTiempo);
-
-  // Botón limpiar
-  document.getElementById("btnLimpiar").addEventListener("click", ()=>{
-    document.getElementById("formulario").reset();
-    clearAuto();
-  });
-
-  // Input cédula solo números
-  const contacto = document.getElementById("contacto");
-  contacto.setAttribute("placeholder","Teléfono / correo");
+  document.getElementById('fechaSolicitud').addEventListener('change', calcularTiempo);
+  document.getElementById('fechaEntrega').addEventListener('change', calcularTiempo);
+  document.getElementById('btnLimpiar').addEventListener('click', ()=>{ document.getElementById('formulario').reset(); clearAuto(); });
 });
 
-/* =======================
-   AUTOCOMPLETADO
-   ======================= */
-function autocompletar() {
-  const tramite = document.getElementById("tramite").value;
-  const datos = baseDatos[tramite];
-  if (datos) {
-    document.getElementById("servicio").value = datos.servicio;
-    document.getElementById("producto").value = datos.producto;
-    document.getElementById("tiempoEstablecido").value = datos.tiempo;
+/* ===== Autocompletar ===== */
+function autocompletar(){
+  const t = document.getElementById('tramite').value;
+  const d = baseDatos[t];
+  if (d){
+    document.getElementById('servicio').value = d.servicio;
+    document.getElementById('producto').value = d.producto;
+    document.getElementById('tiempoEstablecido').value = d.tiempo;
     calcularTiempo();
-  } else {
+  }else{
     clearAuto();
   }
 }
-
 function clearAuto(){
-  document.getElementById("servicio").value = "";
-  document.getElementById("producto").value = "";
-  document.getElementById("tiempoEstablecido").value = "";
-  document.getElementById("tiempoAtencion").value = "";
-  document.getElementById("cumple").value = "";
+  ['servicio','producto','tiempoEstablecido','tiempoAtencion','cumple'].forEach(id=> document.getElementById(id).value='');
 }
 
-/* =======================
-   DÍAS HÁBILES
-   ======================= */
-function contarDiasLaborables(inicio, fin) {
+/* ===== Días hábiles ===== */
+function contarDiasLaborables(inicio, fin){
   try{
-    let start = new Date(inicio), end = new Date(fin), count = 0;
-    if (isNaN(start) || isNaN(end)) return 0;
-    start = new Date(start.getFullYear(), start.getMonth(), start.getDate());
-    end   = new Date(end.getFullYear(), end.getMonth(), end.getDate());
-    while (start <= end) {
-      const day = start.getDay(); // 0=Dom, 6=Sáb
-      if (day !== 0 && day !== 6) count++;
-      start.setDate(start.getDate() + 1);
-    }
-    return count;
+    let a=new Date(inicio), b=new Date(fin), c=0;
+    if (isNaN(a)||isNaN(b)) return 0;
+    a=new Date(a.getFullYear(),a.getMonth(),a.getDate());
+    b=new Date(b.getFullYear(),b.getMonth(),b.getDate());
+    while(a<=b){ const d=a.getDay(); if(d!==0 && d!==6) c++; a.setDate(a.getDate()+1); }
+    return c;
   }catch{ return 0; }
 }
-
-function calcularTiempo() {
-  const ini = document.getElementById("fechaSolicitud").value;
-  const fin = document.getElementById("fechaEntrega").value;
-
-  if (!ini || !fin) {
-    document.getElementById("tiempoAtencion").value = "";
-    document.getElementById("cumple").value = "Pendiente";
-    return;
-  }
-
+function calcularTiempo(){
+  const ini=document.getElementById('fechaSolicitud').value;
+  const fin=document.getElementById('fechaEntrega').value;
+  if (!ini || !fin){ document.getElementById('tiempoAtencion').value=''; document.getElementById('cumple').value='Pendiente'; return; }
   const dias = contarDiasLaborables(ini, fin);
-  document.getElementById("tiempoAtencion").value = dias;
-
-  const establecido = parseInt(document.getElementById("tiempoEstablecido").value || "0", 10);
-  if (!establecido){
-    document.getElementById("cumple").value = "Pendiente";
-    return;
-  }
-
-  document.getElementById("cumple").value = (dias <= establecido) ? "Cumple" : "No Cumple";
+  document.getElementById('tiempoAtencion').value = dias;
+  const est = parseInt(document.getElementById('tiempoEstablecido').value||'0',10);
+  document.getElementById('cumple').value = est ? (dias<=est ? 'Cumple':'No Cumple') : 'Pendiente';
 }
 
-/* =======================
-   VALIDACIONES EXTRA
-   ======================= */
-// Cédula ecuatoriana (10 dígitos)
-function validarCedulaEc(ced){
-  if(!/^\d{10}$/.test(ced)) return false;
-  const prov = parseInt(ced.slice(0,2),10);
-  if(prov < 1 || prov > 24) return false;
-  const d = ced.split('').map(n=>parseInt(n,10));
-  let suma = 0;
-  for (let i=0; i<9; i++){
-    let val = d[i];
-    if (i % 2 === 0){ // posiciones impares 0,2,4,6,8 (1,3,5,7,9)
-      val = val * 2; if (val > 9) val -= 9;
-    }
-    suma += val;
-  }
-  const decena = Math.ceil(suma / 10) * 10;
-  const verif = (decena - suma) % 10;
-  return verif === d[9];
-}
-
-/* =======================
-   ENVÍO A GOOGLE FORMS
-   ======================= */
+/* ===== Envío a Google Forms (sin CORS) ===== */
 const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSfz-2g5cH9E5wDEzX_LUZQ2EpBSsrWiagTHrRZQHwE1W_Emcg/formResponse";
 
-async function enviarFormulario(e) {
+async function enviarFormulario(e){
   e.preventDefault();
-
-  const btn = document.getElementById("btnEnviar");
+  const btn = document.getElementById('btnEnviar');
   btn.disabled = true;
 
-  // Validación mínima
-  const faltantes = [];
-  const reqIds = ["tramite","servicio","producto","fechaSolicitud","fechaEntrega","tipoUsuario","canalAcceso","requirente","contacto","proposito","tecnico"];
-  reqIds.forEach(id => { const el = document.getElementById(id); if(!el || !String(el.value||"").trim()) faltantes.push(id); });
-
-  if (faltantes.length){
+  const oblig = ["tramite","servicio","producto","fechaSolicitud","fechaEntrega","tipoUsuario","canalAcceso","requirente","contacto","proposito","tecnico"];
+  const falt = oblig.filter(id => !String(document.getElementById(id).value||"").trim());
+  if (falt.length){
     btn.disabled = false;
-    Swal.fire("Falta información","Completa: " + faltantes.join(", "), "warning");
-    return;
+    Swal.fire("Falta información","Completa: "+falt.join(", "),"warning"); return;
   }
 
-  // Validación cédula si existe en el DOM (puede no estar en esta versión)
-  const cedulaEl = document.getElementById("cedula");
-  if (cedulaEl && cedulaEl.value && !validarCedulaEc(cedulaEl.value.trim())){
-    btn.disabled = false;
-    Swal.fire("Cédula inválida","Verifica que el número de cédula sea correcto (10 dígitos).","error");
-    return;
-  }
-
-  const fs = document.getElementById("fechaSolicitud").value || "";
-  const fe = document.getElementById("fechaEntrega").value || "";
-
-  const [fsDate, fsTime] = fs.split("T");
-  const [feDate, feTime] = fe.split("T");
-
-  const [fsY="00", fsM="00", fsD="00"] = (fsDate||"").split("-");
-  const [fsH="00", fsMin="00"] = (fsTime||"").split(":");
-
-  const [feY="00", feM="00", feD="00"] = (feDate||"").split("-");
-  const [feH="00", feMin="00"] = (feTime||"").split(":");
+  const fs = document.getElementById("fechaSolicitud").value||"", fe = document.getElementById("fechaEntrega").value||"";
+  const [fsDate,fsTime] = fs.split("T"); const [feDate,feTime] = fe.split("T");
+  const [fsY="00",fsM="00",fsD="00"]=(fsDate||"").split("-"); const [fsH="00",fsMin="00"]=(fsTime||"").split(":");
+  const [feY="00",feM="00",feD="00"]=(feDate||"").split("-"); const [feH="00",feMin="00"]=(feTime||"").split(":");
 
   const campos = {
     "entry.1959236414": document.getElementById("tramite").value,
     "entry.877888232":  document.getElementById("servicio").value,
     "entry.1047749455": document.getElementById("producto").value,
 
-    "entry.479612767_year":   fsY,
-    "entry.479612767_month":  fsM,
-    "entry.479612767_day":    fsD,
-    "entry.479612767_hour":   fsH || "00",
-    "entry.479612767_minute": fsMin || "00",
+    "entry.479612767_year":fsY, "entry.479612767_month":fsM, "entry.479612767_day":fsD,
+    "entry.479612767_hour":fsH||"00", "entry.479612767_minute":fsMin||"00",
 
-    "entry.371310726_year":   feY,
-    "entry.371310726_month":  feM,
-    "entry.371310726_day":    feD,
-    "entry.371310726_hour":   feH || "00",
-    "entry.371310726_minute": feMin || "00",
+    "entry.371310726_year":feY, "entry.371310726_month":feM, "entry.371310726_day":feD,
+    "entry.371310726_hour":feH||"00", "entry.371310726_minute":feMin||"00",
 
-    "entry.235301614":  document.getElementById("tiempoAtencion").value,
-    "entry.764566110":  document.getElementById("tiempoEstablecido").value,
+    "entry.235301614": document.getElementById("tiempoAtencion").value,
+    "entry.764566110": document.getElementById("tiempoEstablecido").value,
     "entry.2016087422": document.getElementById("cumple").value,
     "entry.1411334318": document.getElementById("tipoUsuario").value,
     "entry.5168654":    document.getElementById("canalAcceso").value,
@@ -521,28 +389,13 @@ async function enviarFormulario(e) {
     "entry.1752369747": document.getElementById("tecnico").value
   };
 
-  // Construye y envía en iframe oculto (sin CORS)
   const form = document.createElement("form");
-  form.action = GOOGLE_FORM_ACTION;
-  form.method = "POST";
-  form.target = "dummyFrame";
+  form.action = GOOGLE_FORM_ACTION; form.method = "POST"; form.target = "dummyFrame";
+  for (const k in campos){ const i=document.createElement("input"); i.type="hidden"; i.name=k; i.value=campos[k]??""; form.appendChild(i); }
+  document.body.appendChild(form); form.submit(); form.remove();
 
-  for (const key in campos) {
-    const input = document.createElement("input");
-    input.type = "hidden";
-    input.name = key;
-    input.value = campos[key] ?? "";
-    form.appendChild(input);
-  }
-
-  document.body.appendChild(form);
-  form.submit();
-  form.remove();
-
-  await Swal.fire({ icon:'success', title:'Formulario enviado', text:'Los datos han sido registrados correctamente.' });
-  document.getElementById("formulario").reset();
-  clearAuto();
-  btn.disabled = false;
+  await Swal.fire({icon:'success',title:'Formulario enviado',text:'Los datos han sido registrados correctamente.'});
+  document.getElementById('formulario').reset(); clearAuto(); btn.disabled=false;
 }
 </script>
 </body>
