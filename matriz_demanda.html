@@ -159,11 +159,28 @@
 
 <footer>© 2025 Secretaría Nacional de Gestión de Riesgos – CZ 5-8 | Uso Interno</footer>
 
-<!-- IFRAME para envío silencioso a Google Forms -->
+<!-- IFRAME (solo si se usa el fallback a Google Forms) -->
 <iframe name="dummyFrame" style="display:none"></iframe>
 
 <script>
-/* ===== Base de datos local (Trámite → Servicio/Producto/Tiempo) ===== */
+/* ================================
+   CONFIG DE ENVÍO
+   ================================ */
+// Intenta primero sin action y luego con action=save (para compatibilidad)
+const WORKER_ENDPOINTS = [
+  "https://white-night-b8de.dylanvillasagua.workers.dev/certificados",
+  "https://white-night-b8de.dylanvillasagua.workers.dev/certificados?action=save"
+];
+
+// Si quieres desactivar el respaldo a Google Forms, pon false
+const FALLBACK_TO_FORMS = true;
+
+// (Respaldo) URL del Google Forms actual
+const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSfz-2g5cH9E5wDEzX_LUZQ2EpBSsrWiagTHrRZQHwE1W_Emcg/formResponse";
+
+/* ================================
+   BASE DE DATOS LOCAL (Trámite → Servicio/Producto/Tiempo)
+   ================================ */
 const baseDatos = {
   "Emisión de informe de análisis de amenaza o inspección técnica para la reducción del riesgo del desastres": {
     servicio:"Análisis de amenaza o riesgo aceptable para la reducción del riesgo de desastres",
@@ -346,9 +363,9 @@ function calcularTiempo(){
   document.getElementById('cumple').value = est ? (dias<=est ? 'Cumple':'No Cumple') : 'Pendiente';
 }
 
-/* ===== Envío a Google Forms (sin CORS) ===== */
-const GOOGLE_FORM_ACTION = "https://docs.google.com/forms/d/e/1FAIpQLSfz-2g5cH9E5wDEzX_LUZQ2EpBSsrWiagTHrRZQHwE1W_Emcg/formResponse";
-
+/* ================================
+   ENVÍO: Worker (primario) + Forms (respaldo opcional)
+   ================================ */
 async function enviarFormulario(e){
   e.preventDefault();
   const btn = document.getElementById('btnEnviar');
@@ -358,9 +375,79 @@ async function enviarFormulario(e){
   const falt = oblig.filter(id => !String(document.getElementById(id).value||"").trim());
   if (falt.length){
     btn.disabled = false;
-    Swal.fire("Falta información","Completa: "+falt.join(", "),"warning"); return;
+    Swal.fire("Falta información","Completa: "+falt.join(", "),"warning");
+    return;
   }
 
+  const payload = {
+    tramite:  document.getElementById("tramite").value,
+    servicio: document.getElementById("servicio").value,
+    producto: document.getElementById("producto").value,
+    fechaSolicitud: document.getElementById("fechaSolicitud").value,
+    fechaEntrega:   document.getElementById("fechaEntrega").value,
+    tiempoEstablecido: document.getElementById("tiempoEstablecido").value,
+    cumple: document.getElementById("cumple").value || "",
+    tipoUsuario: document.getElementById("tipoUsuario").value,
+    canalAcceso: document.getElementById("canalAcceso").value,
+    requirente:  document.getElementById("requirente").value,
+    contacto:    document.getElementById("contacto").value,
+    proposito:   document.getElementById("proposito").value,
+    observaciones: document.getElementById("observaciones").value,
+    tecnico:     document.getElementById("tecnico").value,
+    ua: navigator.userAgent
+  };
+
+  // 1) Intento con el Worker (prueba ambas variantes)
+  try{
+    const js = await postToWorker(payload);
+    await Swal.fire("Guardado", `Registro #${js.id} creado`, "success");
+    document.getElementById('formulario').reset(); clearAuto();
+    btn.disabled = false;
+    return;
+  }catch(errWorker){
+    console.warn("Worker falló:", errWorker);
+  }
+
+  // 2) Respaldo opcional a Google Forms
+  if (FALLBACK_TO_FORMS){
+    try{
+      postToGoogleForms(); // no lanza CORS por iframe
+      await Swal.fire({icon:'success',title:'Formulario enviado',text:'Los datos han sido registrados correctamente (respaldo).'});
+      document.getElementById('formulario').reset(); clearAuto();
+      btn.disabled = false;
+      return;
+    }catch(errForms){
+      console.error("Forms falló:", errForms);
+    }
+  }
+
+  // 3) Si todo falla
+  btn.disabled = false;
+  Swal.fire("Error","No se pudo registrar. Verifica el Worker y vuelve a intentar.","error");
+}
+
+async function postToWorker(data){
+  // intenta /certificados y luego /certificados?action=save
+  let lastErr;
+  for (const url of WORKER_ENDPOINTS){
+    try{
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      const js = await res.json().catch(()=> ({}));
+      if (res.ok && js && js.ok) return js;
+      // si devuelve INVALID... intenta la otra variante
+      lastErr = new Error(js?.error || `HTTP ${res.status}`);
+    }catch(e){
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error("No se pudo contactar al Worker");
+}
+
+function postToGoogleForms(){
   const fs = document.getElementById("fechaSolicitud").value||"", fe = document.getElementById("fechaEntrega").value||"";
   const [fsDate,fsTime] = fs.split("T"); const [feDate,feTime] = fe.split("T");
   const [fsY="00",fsM="00",fsD="00"]=(fsDate||"").split("-"); const [fsH="00",fsMin="00"]=(fsTime||"").split(":");
@@ -391,11 +478,12 @@ async function enviarFormulario(e){
 
   const form = document.createElement("form");
   form.action = GOOGLE_FORM_ACTION; form.method = "POST"; form.target = "dummyFrame";
-  for (const k in campos){ const i=document.createElement("input"); i.type="hidden"; i.name=k; i.value=campos[k]??""; form.appendChild(i); }
+  for (const k in campos){
+    const i = document.createElement("input");
+    i.type="hidden"; i.name=k; i.value=campos[k]??"";
+    form.appendChild(i);
+  }
   document.body.appendChild(form); form.submit(); form.remove();
-
-  await Swal.fire({icon:'success',title:'Formulario enviado',text:'Los datos han sido registrados correctamente.'});
-  document.getElementById('formulario').reset(); clearAuto(); btn.disabled=false;
 }
 </script>
 </body>
